@@ -17,6 +17,8 @@
 	<link rel="stylesheet" href="deckjs/extensions/status/deck.status.css">
 	<link rel="stylesheet" href="deckjs/extensions/hash/deck.hash.css">
 	
+  <link href="jplayer/bluemonday/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
+
 	<!-- Theme CSS files (menu swaps these out) -->
 	<link rel="stylesheet" id="style-theme-link" href="deckjs/themes/style/web-2.0.css">
 	<link rel="stylesheet" id="transition-theme-link" href="deckjs/themes/transition/horizontal-slide.css">
@@ -48,182 +50,487 @@
 </head>
 
 <body class="project-container">
-<div class="deck-container">
-  <section class="slide" id="title-slide" popcorn-slideshow="1">
-    <h1>Firefox Hacking</h1>
-    <h3>David Seifried</h3>
-    <div class="transcript">
-      Hi
-    </div>
-  </section>
+    <div class="deck-container">
+      <section class="slide" id="title-slide" popcorn-slideshow="1">
+	<h1>Computing Skills for Scientists and Engineers</h1>
+	<div class="transcript">
+	  This screencast is a quick introduction to the <a href="http://software-carpentry.org">Software Carpentry</a> project.
+	</div>
+      </section>
 
-  <section class="slide" id="bugs" popcorn-slideshow="4">
-    <div class="transcript">
-      Doesn't mess up at the top of the slide either
-    </div>
-    <h2>Currently working on:</h2>
-    <ol>
-      <li>
-      <h3><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=702161">Bug 702161</a></h3>
-        <p>videocontrols.xml has anonymous function event listeners that are added but never removed</p>
-      </li>
-      <li>
-      <h3><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=708814">Bug 708814</a></h3>
-        <p>Should fade out videocontrols even if there's no mouse movement</p>
-      </li>
-      <li>
-      <h3><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=680321">Bug 680321</a></h3>
-        <p>Media preload state should reset in resource selection algorithm</p>
-      </li>
-    </ol>
-  </section>
+      <section class="slide deck-next" id="bugs" popcorn-slideshow="4">
+	<h2>Mission</h2>
+	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
+	<div class="transcript">
+	  Our mission is to help scientists be more productive by teaching them basic computing skills.
+	</div>
+      </section>
 
-  <section class="slide" id="bug702161" popcorn-slideshow="8">
-    <div class="transcript">
-      <a href="http://google.ca">Here have this link</a>
-    </div>
-    <h2>Bug 702161</h2>
-    <h3>videocontrols.xml has anonymous function event listeners that are added but never removed</h3>
-    <br/>
-    <p>In second stage of review - First review by Jared Weins, waiting on review by Justin Dolske</p>
-    <pre><code>if (!this.isAudioOnly) {
-    this.muteButton.addEventListener("mouseover",  function(e) {
-      self.onVolumeMouseInOut(e);
-    }, false);
-    this.muteButton.addEventListener("mouseout",   function(e) {
-      self.onVolumeMouseInOut(e);
-    }, false);
-    this.volumeStack.addEventListener("mouseover", function(e) {
-      self.onVolumeMouseInOut(e);
-    }, false);
-    this.volumeStack.addEventListener("mouseout",  function(e) {
-      self.onVolumeMouseInOut(e);
-    }, false);
-  }
+      <section class="slide deck-after" popcorn-slideshow="9">
+	<h2>Problem</h2>
+	<p>Scientists spend 40% or more of their time wrestling with software</p>
+	<div class="transcript">
+	  The problem we're trying to solve is that scientists often spend 40% or more of their time wrestling with software...
+	</div>
+      </section>
 
-  this.videocontrols.addEventListener("transitionend", function(e) {
-    self.onTransitionEnd(e);
-   }, false);
+      <section class="slide deck-after" popcorn-slideshow="14">
+	<h2>Problem</h2>
+	<p>But 95% or more are primarily self-taught</p>
+	<div class="transcript">
+	  ...but 95% or more of them are primarily self-taught.
+	</div>
+      </section>
 
-  // Make the &lt;video&gt; element keyboard accessible.
-  this.video.setAttribute("tabindex", 0);
-  this.video.addEventListener("keypress", function (e) {
-    self.keyHandler(e)
-  }, false);</code></pre>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="17">
+	<h2>Problem</h2>
+	<p>So they spend hours doing things that should take minutes...</p>
+	<div class="transcript">
+	  So they spend hours doing things that should take minutes...
+	</div>
+      </section>
 
-  <section class="slide" id="702161fix" popcorn-slideshow="11">
-    <div class="transcript">
-      data
-    </div>
-    <h2>The fix</h2>
-    <ul>
-    <li>Store references to each anonymous function</li>
-    <li>Remove these listeners in terminate function</li>
-    <li>Minimize repated code</li>
-  </ul>
-    <pre><code> // Helper function to add an event listener to the given element
-  function addListener(elem, eventName, func) {
-    self.controlListeners.push({ item: elem, event: eventName, fnc: func });
-    elem.addEventListener(eventName, func, false);
-  }
+      <section class="slide deck-after" popcorn-slideshow="20">
+	<h2>Problem</h2>
+	<p>...reinvent a lot of wheels...</p>
+	<div class="transcript">
+	  ...reinvent a lot of wheels...
+	</div>
+      </section>
 
-  addListener(this.muteButton, "command", this.toggleMute.bind(this)); 
-  addListener(this.playButton, "command", this.togglePause.bind(this));</code></pre>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="22">
+	<h2>Problem</h2>
+	<p>...and still don't know if their results are reliable or not</p>
+	<div class="transcript">
+	  <p>...and still don't know if their results are reliable or not.</p>
+	</div>
+      </section>
 
-  <section class="slide" id="702161fixcont" popcorn-slideshow="14">
-    <h2>The fix cont.</h2>
-    <p>Removing listeners inside terminate function</p>
-    <pre><code>for each(let element in this.controlListeners)
-    element.item.removeEventListener(element.event, element.fnc, false);
+      <section class="slide deck-after" popcorn-slideshow="24">
+	<h2>Solution</h2>
+	<p>Short intensive workshops</p>
+	<div class="transcript">
+	  Our solution combines short, intensive workshops...
+	</div>
+      </section>
 
-  delete this.controlListeners;</code></pre>
-    <div class="transcript">
-      More data
-    </div>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="27">
+	<h2>Solution</h2>
+	<p>Short intensive workshops <br/> + <br/> Self-paced online instruction</p>
+	<div class="transcript">
+	  ...with self-paced online instruction.
+	</div>
+      </section>
 
-  <section class="slide" id="bug708814" popcorn-slideshow="18">
-    <h2>Bug 708814</h2>
-    <h3>Should fade out videocontrols even if there's no mouse movement</h3>
-    <a href="http://pearce.org.nz/full-screen/">Demo</a>
-    <div class="transcript">
-      Lorem ipsum dolor sit amet, adipiscing aenean semper dignissim in in, in nullam quam, vel esse eget turpis aliquam, nulla tellus vivamus mollis commodo dolor, suspendisse massa nonummy facilisis id. Sagittis eget eget in duis, orci diam lacus vivamus, elit lorem. Odio tempor, a vel morbi malesuada leo, aliquam nulla, est feugiat class dictum suspendisse tortor, aenean arcu elit leo amet. Dignissim iaculis donec ac dictumst non turpis, ornare curabitur. Porta mauris viverra, nonummy leo aliquam consequat dolor quis. Orci et adipiscing sapien, tincidunt sed ac erat fermentum, velit augue vitae magna massa, et elit amet sapien wisi lobortis, vestibulum irure mauris id duis. Turpis nec, amet suspendisse ullamcorper sollicitudin, vel a eros integer et, eget quam suspendisse, a interdum porta eu elit a ante. Ullamcorper massa volutpat elementum, nunc nam lacus nulla, elit morbi id convallis eget, id rhoncus. Elit arcu sed, bibendum tellus enim.
-      In tortor diam nunc, eleifend pede ante sed neque, a ipsum diam ac facilisi bibendum. Adipiscing imperdiet cursus lectus velit elementum at, accumsan donec accumsan. Nihil aenean vel adipiscing sed auctor, dolor erat nec purus justo nunc, sociosqu eros erat. Velit ligula netus dui mattis nibh gravida, vitae integer primis suspendisse, et non justo, urna metus nulla odio. Senectus nulla sit condimentum justo nulla mauris. Felis nec, consectetuer ut senectus consequat scelerisque velit luctus, vehicula praesent libero et. Faucibus sollicitudin velit lorem, fringilla sagittis vestibulum.
-      Orci nibh ex rhoncus molestie ante condimentum, hendrerit arcu augue ut at sapiente, ac rhoncus accumsan vulputate consectetuer condimentum venenatis, ultricies nec duis suscipit orci dui quam, quam egestas sociosqu condimentum amet urna donec. Nec suscipit, nunc massa ipsum vitae in ligula lobortis, et vitae facilisis mi quam ut nibh, ac semper sed a diam, est curabitur in ante. Curabitur ligula lacinia proin nec, libero amet mauris pellentesque elit vestibulum et. Ipsum sollicitudin possimus integer quisque morbi, aliquam a tortor accumsan condimentum tellus, duis ut vestibulum pede lectus cras donec. Maecenas orci dapibus nullam suscipit augue. Magna praesent sodales laoreet fusce lobortis arcu, ac quis ornare in aute nulla, morbi in eget, conubia amet blandit eum maecenas a. Sagittis curabitur sed enim elit, ut tortor auctor mollis odio mattis, adipiscing metus in vestibulum. Massa in nulla sed nec mauris, id placerat, et turpis augue sit turpis maecenas quis. Dui feugiat dolor, malesuada tincidunt eu tincidunt dolor. Suspendisse sollicitudin at wisi eu ligula sollicitudin, cras aenean penatibus velit magna scelerisque, congue ac vitae eleifend. In consectetuer ut dolor id purus.
-      Ante et sollicitudin sed elit risus, et egestas. Nascetur leo justo viverra sollicitudin mauris, bibendum donec non, leo vitae, sed massa ut wisi venenatis mauris vestibulum, vivamus viverra lorem penatibus dignissim in. Nulla sit libero ultricies donec nam fusce, risus non tempor semper magna, lectus placerat hendrerit, pede feugiat. Felis feugiat lorem purus, sit a aenean, vulputate malesuada nunc integer eu metus. Odio et donec quis libero a tortor, et duis quam dui. Libero porta facilisis quam nulla, aenean tristique fusce, sem leo tincidunt eros etiam.
-    </div>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="30">
+	<h2>Benefit</h2>
+	<p>More confidence in results</p>
+	<div class="transcript">
+	  The benefit to the scientist is more confidence in their results...
+	</div>
+      </section>
 
-  <section class="slide" id="708814code" popcorn-slideshow="36">
-    <h2>The fix</h2>
-    <ul>
-      <li>Make sure when full screen is triggered that the controls hide themselves</li>
-    <li>Fix should workwith both fullscreen button click and triggered via a hotkey ( "k" in the prior demo )</li>
-    <li>Tests to prove my fix does what it says</li>
-    <pre><code>this.video.ownerDocument.addEventListener( "mozfullscreenchange", function(e) {
-    clearTimeout(this._hideControlsTimeout);
-    if(self.isVideoInFullScreen() &amp;&amp; self.video.mozMatchesSelector("video:hover")) {
-      self._hideControlsTimeout = setTimeout(self._hideControlsFn, self.HIDE_CONTROLS_TIMEOUT_MS);
-    }
-  }, false);</code></pre>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="33">
+	<h2>Benefit</h2>
+	<p>More confidence in results <br/> + <br/> <em>Higher productivity</em></p>
+	<div class="transcript">
+	  ...and higher productivity.
+	</div>
+      </section>
 
-  <section class="slide" id="708814todo" popcorn-slideshow="45">
-    <h2>To Do</h2>
-    <ul>
-      <li>Write tests</li>
-      <li>Found out about i<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=708553">bug 708553</a> - picked it up</li>
-    <li>Possibly blocked by 708553?</li>
-    <ul>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="34">
+	<h2>Benefit</h2>
+	<p>More confidence in results <br/> + <br/> <em>Higher productivity</em></p>
+	<p>a day a week is common</p>
+	<div class="transcript">
+	  A day a week is common...
+	</div>
+      </section>
 
-  <section class="slide" id="bug680321" popcorn-slideshow="56">
-    <h2>Bug 680321</h2>
-    <h3>Media preload state should reset in resource selection algorithm</h3>
-    <br/>
-    <p>Currently requesting feedback - potential fix, no tests</p>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="35">
+	<h2>Benefit</h2>
+	<p>More confidence in results <br/> + <br/> <em>Higher productivity</em></p>
+	<p>10X isn't rare</p>
+	<div class="transcript">
+	  ...and a ten-fold improvement isn't rare.
+	</div>
+      </section>
 
-  <section class="slide" id="680321fix" popcorn-slideshow="70">
-    <h2>The fix</h2>
-    <p>Removed some code in resource selection algorithm that prevented preload states with less aggressive buffering to proceed</p>
-    <a href="https://bugzilla.mozilla.org/attachment.cgi?id=554292">Test case</a>
-    <a href="https://bugzilla.mozilla.org/attachment.cgi?id=591687&action=diff">Diff of code</a>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="38">
+	<h2>Workshops</h2>
+	<p>Core skills needed to be productive <br/> in a small research team</p>
+	<div class="transcript">
+	  The workshops cover the core skills needed to be productive in a small research team:
+	</div>
+      </section>
 
-  <section class="slide" id="680321todo" popcorn-slideshow="80">
-    <h2>To Do</h2>
-    <ul>
-      <li>Create tests</li>
-      <li>Wait for feedback</li>
-    </ul>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="42">
+	<h2>Workshops</h2>
+	<p>Core skills needed to be productive <br/> in a small research team</p>
+	<table>
+	  <tr>
+	    <td>Basic programming</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  Basic programming...
+	</div>
+      </section>
 
-  <section class="slide" id="thankyou" popcorn-slideshow="90">
-    <h1>Thank You!</h1>
-  </section>
+      <section class="slide deck-after" popcorn-slideshow="43">
+	<h2>Workshops</h2>
+	<p>Core skills needed to be productive <br/> in a small research team</p>
+	<table>
+	  <tr>
+	    <td>Basic programming</td>
+	    <td>Version control</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...version control...
+	</div>
+      </section>
 
-<p class="deck-status">
-	<span class="deck-status-current"></span>
+      <section class="slide deck-after" popcorn-slideshow="44">
+	<h2>Workshops</h2>
+	<p>Core skills needed to be productive <br/> in a small research team</p>
+	<table>
+	  <tr>
+	    <td>Basic programming</td>
+	    <td>Version control</td>
+	  </tr>
+	  <tr>
+	    <td>Testing</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...testing...
+	</div>
+      </section>
+
+      <section class="slide deck-after" popcorn-slideshow="45">
+	<h2>Workshops</h2>
+	<p>Core skills needed to be productive <br/> in a small research team</p>
+	<table>
+	  <tr>
+	    <td>Basic programming</td>
+	    <td>Version control</td>
+	  </tr>
+	  <tr>
+	    <td>Testing</td>
+	    <td>Using the shell</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...using the shell...
+	</div>
+      </section>
+
+      <section class="slide deck-after" popcorn-slideshow="46">
+	<h2>Workshops</h2>
+	<p>Core skills needed to be productive <br/> in a small research team</p>
+	<table>
+	  <tr>
+	    <td>Basic programming</td>
+	    <td>Version control</td>
+	  </tr>
+	  <tr>
+	    <td>Testing</td>
+	    <td>Using the shell</td>
+	  </tr>
+	  <tr>
+	    <td>Relational databases</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...relational databases...
+	</div>
+      </section>
+
+      <section class="slide deck-after" popcorn-slideshow="48">
+	<h2>Workshops</h2>
+	<p>Core skills needed to be productive <br/> in a small research team</p>
+	<table>
+	  <tr>
+	    <td>Basic programming</td>
+	    <td>Version control</td>
+	  </tr>
+	  <tr>
+	    <td>Testing</td>
+	    <td>Using the shell</td>
+	  </tr>
+	  <tr>
+	    <td>Relational databases</td>
+	    <td>Matrix programming</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...and matrix programming.
+	</div>
+      </section>
+
+      <section class="slide deck-after" popcorn-slideshow="49">
+	<h2>Online</h2>
+	<p>More depth on core topics</p>
+	<div class="transcript">
+	  The self-paced learning goes into more depth on these core topics...
+	</div>
+      </section>
+
+      <section class="slide deck-after" popcorn-slideshow="52">
+	<h2>Online</h2>
+	<p>More depth on core topics <br/> Plus:</p>
+	<div class="transcript">
+	  ...and looks at...
+	</div>
+      </section>
+
+      <section class="slide deck-after" popcorn-slideshow="53">
+	<h2>Online</h2>
+	<p>More depth on core topics <br/> Plus:</p>
+	<table>
+	  <tr>
+	    <td>Program design</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...program design...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="54">
+	<h2>Online</h2>
+	<p>More depth on core topics <br/> Plus:</p>
+	<table>
+	  <tr>
+	    <td>Program design</td>
+	    <td>Spreadsheets</td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...program design...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="55">
+	<h2>Online</h2>
+	<p>More depth on core topics <br/> Plus:</p>
+	<table>
+	  <tr>
+	    <td>Program design</td>
+	    <td>Spreadsheets</td>
+	  </tr>
+	  <tr>
+	    <td>Data management</td>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...program design...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="56">
+	<h2>Online</h2>
+	<p>More depth on core topics <br/> Plus:</p>
+	<table>
+	  <tr>
+	    <td>Program design</td>
+	    <td>Spreadsheets</td>
+	  </tr>
+	  <tr>
+	    <td>Data management</td>
+	    <td>Software lifecycles</td>
+	  </tr>
+	</table>
+	<div class="transcript">
+	  ...and software lifecycles.
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="58">
+	<h2>Licensing</h2>
+	<p>All content is available online</p>
+	<div class="transcript">
+	  All our content is available online...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="61">
+	<h2>Licensing</h2>
+	<p>All content is available online <br/> Creative Commons license</p>
+	<div class="transcript">
+	  ...under a Creative Commons license...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="62">
+	<h2>Licensing</h2>
+	<p>All content is available online <br/> Creative Commons license <br/> Re-use and re-mix freely</p>
+	<div class="transcript">
+	  ...so you can re-use and re-mix it freely.
+	</div>
+      </section>
+
+      <section class="slide deck-after" popcorn-slideshow="65">
+	<h2>Support</h2>
+	<img src="images/sloan.png" alt="Sloan Foundation" />
+	<div class="transcript">
+	  We're supported by the Sloan Foundation...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="67">
+	<h2>Support</h2>
+	<img src="images/sloan.png" alt="Sloan Foundation" />
+	<img src="images/mozilla.png" alt="Mozilla" />
+	<div class="transcript">
+	  ...and Mozilla...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="68">
+	<h2>Support</h2>
+	<img src="images/indiana.png" alt="Indiana University" />
+	<img src="images/michigan-state.png" alt="Michigan State University" />
+	<img src="images/qmul.png" alt="Queen Mary University London" />
+	<img src="images/toronto.png" alt="University of Toronto" />
+	<img src="images/microsoft.png" alt="Microsoft" />
+	<img src="images/mathworks.png" alt="The MathWorks" />
+	<img src="images/enthought.png" alt="Enthought" />
+	<img src="images/sharcnet.png" alt="SharcNet" />
+	<img src="images/mitacs.png" alt="MITACS" />
+	<img src="images/scinet.png" alt="SciNet" />
+	<img src="images/ukmo.png" alt="UK Met Office" />
+	<img src="images/scimatic.png" alt="Scimatic" />
+	<img src="images/python.png" alt="Python Software Foundation" />
+	<img src="images/lanl.png" alt="Los Alamos National Laboratory" />
+	<div class="transcript">
+	  ...and in the past, have had support from a wide range of universities, government labs, companies, and other organizations.
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="73">
+	<h2>Contributing</h2>
+	<p>Give us feedback</p>
+	<div class="transcript">
+	  If you'd like to contribute, you can give us feedback...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="77">
+	<h2>Contributing</h2>
+	<p>Give us feedback <br/> Answer questions</p>
+	<div class="transcript">
+	  ...answer questions...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="78">
+	<h2>Contributing</h2>
+	<p>Give us feedback <br/> Answer questions <br/> Create lessons and exercises</p>
+	<div class="transcript">
+	  ...create lessons and exercises...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="80">
+	<h2>Contributing</h2>
+	<p>Give us feedback <br/> Answer questions <br/> Create lessons and exercises <br/> Organize and run workshops</p>
+	<div class="transcript">
+	  ...or organize and run a workshop in your area.
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="82">
+	<h2>Contact</h2>
+	<p><a href="http://software-carpentry.org">http://software-carpentry.org</a></p>
+	<div class="transcript">
+	  For more information, check out our web site at http://software-carpentry.org...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="87">
+	<h2>Contact</h2>
+	<p><a href="http://software-carpentry.org">http://software-carpentry.org</a> <br/> <a href="https://twitter.com/#!/swcarpentry">@swcarpentry</a></p>
+	<div class="transcript">
+	  ...follow us on twitter as @swcarpentry...
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="89">
+	<h2>Contact</h2>
+	<p><a href="http://software-carpentry.org">http://software-carpentry.org</a> <br/> <a href="https://twitter.com/#!/swcarpentry">@swcarpentry</a> <br/> <a href="mailto:info@software-carpentry.org">info@software-carpentry.org</a></p>
+	<div class="transcript">
+	  ...or contact us by email at info@software-carpentry.org.
+	</div>
+      </section>
+      
+      <section class="slide deck-after" popcorn-slideshow="90">
+	<h2>Contact</h2>
+	<p><a href="http://software-carpentry.org">http://software-carpentry.org</a> <br/> <a href="https://twitter.com/#!/swcarpentry">@swcarpentry</a> <br/> <a href="mailto:info@software-carpentry.org">info@software-carpentry.org</a></p>
+	<div class="transcript">
+	  Thank you.
+	</div>
+      </section>
+      
+      <p class="deck-status">
+	<span class="deck-status-current">1</span>
 	/
-	<span class="deck-status-total"></span>
-</p>
-
-<a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
-<a href="#" class="deck-next-link" title="Next">&#8594;</a>
-
-</div>
+	<span class="deck-status-total">12</span>
+      </p>
+      
+      <a href="#" class="deck-prev-link deck-nav-disabled" title="Previous">←</a>
+      <a href="#bugs" class="deck-next-link" title="Next">→</a>
+      
+    </div>
 <audio id="audio" controls class="media" style="width:100%;">
   <source src="media/italia.ogg"/>
 </audio>
+
 <div id="events" style="width:100%;height:3%;"></div>
 <div id="slideshow-transcript" class="popcorn-transcript"></div>
 
-  <!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
-  <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
-  <script>window.jQuery || document.write('<script src="js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
+<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery-1.7.min.js"><\/script>')</script>
+<script src="js/jquery.jplayer.js"></script>
 
 <!-- Deck Core and extensions -->
 <script src="deckjs/core/deck.core.js"></script>

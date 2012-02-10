@@ -7,6 +7,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     var endTime = ( times + 1 ) > trackEvents.length - 1 ? +trackEvents[ times ] + 1 : trackEvents[ times + 1 ];
     teDiv.style.width = ( ( eventDiv.offsetWidth / durationOfEvents ) * ( endTime - trackEvents[ times ] ) - 1 ) * 100 / (eventDiv.offsetWidth) + "%";
     teDiv.id = "popcorn-slideshow-div-" + count;
+    eventDiv.style.overflow = "hidden";
     teDiv.innerHTML = "<p font-size='1em' style='line-height:0px;text-align: center;'><b>" + (count + 1) + "</b></p>";
     teDiv.className = "popcorn-slideshow";
     spacer.className = "spacer";
