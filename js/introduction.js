@@ -1,5 +1,6 @@
 $(function() {
 	// Deck initialization
+  AudioJS.setup();
 	$.deck('.slide');
 	
 	$('#style-themes').change(function() {

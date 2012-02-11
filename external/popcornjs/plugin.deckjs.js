@@ -31,11 +31,9 @@
       }, 
       start: function( event, options ) {
         $.deck( "go", +options.slide );
-        document.getElementById( options.target ).className += " current-slide";
         document.getElementById( "slideshow-transcript" ).innerHTML = $( ".transcript" )[ +options.slide ].innerHTML;
       },
       end: function( event, options ) {
-        document.getElementById( options.target ).className = "popcorn-slideshow";
         document.getElementById( "slideshow-transcript" ).innerHTML = "";
       },
     });

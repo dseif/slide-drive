@@ -1,33 +1,35 @@
 document.addEventListener( "DOMContentLoaded", function( event ) {
 
-  function createElement( times ) {
-    var teDiv = document.createElement( "DIV" ),
-        spacer = document.createElement( "DIV" );
-
-    var endTime = ( times + 1 ) > trackEvents.length - 1 ? +trackEvents[ times ] + 1 : trackEvents[ times + 1 ];
-    teDiv.style.width = ( ( eventDiv.offsetWidth / durationOfEvents ) * ( endTime - trackEvents[ times ] ) - 1 ) * 100 / (eventDiv.offsetWidth) + "%";
-    teDiv.id = "popcorn-slideshow-div-" + count;
-    eventDiv.style.overflow = "hidden";
-    teDiv.innerHTML = "<p font-size='1em' style='line-height:0px;text-align: center;'><b>" + (count + 1) + "</b></p>";
-    teDiv.className = "popcorn-slideshow";
-    spacer.className = "spacer";
-    
-    teDiv.onclick = (function( startTime ) {
-      return function() {
-        popcorn.currentTime( startTime );
-      }
-    })( trackEvents[ times ] );
-
-    eventDiv.appendChild( teDiv );
-    eventDiv.appendChild( spacer );
-  }
-
-  var durationOfEvents = 0,
+  var container,
+      innerContainer = document.createElement( "div" ),
+      durationOfEvents = 0,
+      slides,
       trackEvents = [],
       prevTime = 0,
       count = 0,
       popcorn = Popcorn( "#audio" ),
       eventDiv = document.getElementById( "events" );
+
+  function createElement( times ) {
+    var teDiv = document.createElement( "DIV" ),
+        spacer = document.createElement( "DIV" );
+
+    var endTime = ( times + 1 ) > trackEvents.length - 1 ? +trackEvents[ times ] + 1 : trackEvents[ times + 1 ];
+    teDiv.style.width = ( ( container.offsetWidth / durationOfEvents ) * ( endTime - trackEvents[ times ] ) - 1 ) * 100 / (container.offsetWidth) + "%";
+    teDiv.id = "popcorn-slideshow-div-" + count;
+    teDiv.innerHTML = "<p font-size='1em' style='line-height:0px;top:0px;text-align: center;' title='" + (count + 1) + "'><b></b></p>";
+    teDiv.className = "popcorn-slideshow";
+    spacer.className = "spacer";
+    
+    innerContainer.appendChild( teDiv );
+    innerContainer.appendChild( spacer );
+  }
+
+  function ready(){
+    if( !$( ".vjs-load-progress" )[ 0 ] ) {
+      setTimeout( ready, 100 );
+    } else {
+      container = $( ".vjs-load-progress" )[ 0 ];
       slides = $( "[popcorn-slideshow]" ).each(function( key, val ) {
 
         var time = val.getAttribute( "popcorn-slideshow" );
@@ -61,4 +63,10 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         });
         count++;
       }
+      container.appendChild( innerContainer );
+      popcorn.play();
+      popcorn.pause();
+    }
+  }
+  ready();
 }, false);

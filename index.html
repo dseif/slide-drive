@@ -9,6 +9,8 @@
 	
 	<title>Getting Started with deck.js</title>
 	
+  <script src="external/audiojs/audio.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="external/audiojs/audio-js.css" type="text/css" media="all" title="Audio JS" charset="utf-8">
 	<!-- Core and extension CSS files -->
 	<link rel="stylesheet" href="external/deckjs/core/deck.core.css">
 	<link rel="stylesheet" href="external/deckjs/extensions/goto/deck.goto.css">
@@ -17,9 +19,8 @@
 	<link rel="stylesheet" href="external/deckjs/extensions/status/deck.status.css">
 	<link rel="stylesheet" href="external/deckjs/extensions/hash/deck.hash.css">
 	
-  <link href="external/jplayer/skins/bluemonday/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
-
 	<!-- Theme CSS files (menu swaps these out) -->
+	<link rel="stylesheet" href="external/deckjs/themes/style/swiss.css">
 	<link rel="stylesheet" id="transition-theme-link" href="external/deckjs/themes/transition/horizontal-slide.css">
 	
 	<!-- Custom CSS just for this page -->
@@ -51,15 +52,6 @@
       <section class="slide" id="title-slide" popcorn-slideshow="1">
 	<h1>Computing Skills for Scientists and Engineers</h1>
 	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
 	<div class="transcript">
 	  This screencast is a quick introduction to the <a href="http://software-carpentry.org">Software Carpentry</a> project.
 	</div>
@@ -67,32 +59,6 @@
 
       <section class="slide deck-next" id="bugs" popcorn-slideshow="4">
 	<h2>Mission</h2>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
-	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
 	<p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
 	<div class="transcript">
 	  Our mission is to help scientists be more productive by teaching them basic computing skills.
@@ -552,17 +518,16 @@
       <a href="#bugs" class="deck-next-link" title="Next">→</a>
       
     </div>
-<audio id="audio" controls class="media" style="width:100%;">
-  <source src="media/italia.ogg"/>
-</audio>
-
-<div id="events" style="width:100%;height:3%;"></div>
+<div class="audio-js-box">
+  <audio class="audio-js" id="audio" controls preload="auto" style="display:none;">
+    <source src="media/italia.ogg"/>
+  </audio>
+</div>
 <div id="slideshow-transcript" class="popcorn-transcript"></div>
 
 <!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
 <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
 <script>window.jQuery || document.write('<script src="extnernal/jquery/jquery-1.7.min.js"><\/script>')</script>
-<script src="external/jplayer/jquery.jplayer.js"></script>
 
 <!-- Deck Core and extensions -->
 <script src="external/deckjs/core/deck.core.js"></script>
