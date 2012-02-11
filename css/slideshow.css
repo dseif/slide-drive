@@ -6,10 +6,6 @@
   color: #DDDEE3;
 }
 
-.deck-container {
-  overflow-y:auto;
-}
-
 .current-slide {
   background-color: #0055B0;
   z-index: 10;

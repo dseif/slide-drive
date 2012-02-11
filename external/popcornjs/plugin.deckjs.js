@@ -1,15 +1,5 @@
 (function ( Popcorn ) {
-    var resize = function() {
-      var elem = document.getElementById( "slideshow-transcript" );
-      elem.style.height = document.body.offsetHeight - elem.offsetTop + 15  + "px";
-    };
-    window.addEventListener( "resize", function( e ) {
-      resize();
-    }, false);
-    window.addEventListener( "load", function( e ) {
-      resize();
-    }, false );
-
+    
   Popcorn.plugin( "deckjs" , {
       manifest: {
         about: {
