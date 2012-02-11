@@ -15,7 +15,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         spacer = document.createElement( "DIV" );
 
 console.log( container.offsetWidth );
-    var endTime = ( times + 1 ) > trackEvents.length - 1 ? +trackEvents[ times ] + 1 : trackEvents[ times + 1 ];
+    var endTime = ( times + 1 ) > trackEvents.length - 1 ? +trackEvents[ times ]: trackEvents[ times + 1 ];
     teDiv.style.width = ( ( container.offsetWidth / durationOfEvents ) * ( endTime - trackEvents[ times ] ) - 1 ) * 100 / (container.offsetWidth) + "%";
     teDiv.id = "popcorn-slideshow-div-" + count;
     teDiv.innerHTML = "<p font-size='1em' style='line-height:0px;top:0px;text-align: center;'><b></b></p>";
