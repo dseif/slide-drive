@@ -14,10 +14,11 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     var teDiv = document.createElement( "DIV" ),
         spacer = document.createElement( "DIV" );
 
+console.log( container.offsetWidth );
     var endTime = ( times + 1 ) > trackEvents.length - 1 ? +trackEvents[ times ] + 1 : trackEvents[ times + 1 ];
     teDiv.style.width = ( ( container.offsetWidth / durationOfEvents ) * ( endTime - trackEvents[ times ] ) - 1 ) * 100 / (container.offsetWidth) + "%";
     teDiv.id = "popcorn-slideshow-div-" + count;
-    teDiv.innerHTML = "<p font-size='1em' style='line-height:0px;top:0px;text-align: center;' title='" + (count + 1) + "'><b></b></p>";
+    teDiv.innerHTML = "<p font-size='1em' style='line-height:0px;top:0px;text-align: center;'><b></b></p>";
     teDiv.className = "popcorn-slideshow";
     spacer.className = "spacer";
     
@@ -27,6 +28,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
   function ready(){
     if( !$( ".vjs-load-progress" )[ 0 ] ) {
+      setTimeout( ready, 100 );
+    } else if( $( ".vjs-load-progress" )[ 0 ].offsetWidth < 100 ) {
+
       setTimeout( ready, 100 );
     } else {
       container = $( ".vjs-load-progress" )[ 0 ];
@@ -64,8 +68,6 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         count++;
       }
       container.appendChild( innerContainer );
-      popcorn.play();
-      popcorn.pause();
     }
   }
   ready();
