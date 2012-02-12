@@ -32,6 +32,7 @@
       start: function( event, options ) {
         $.deck( "go", +options.slide );
         document.getElementById( "slideshow-transcript" ).innerHTML = $( ".transcript" )[ +options.slide ].innerHTML;
+        document.getElementById( "slideshow-transcript" ).style.padding = "5px 5px 5px 5px";
       },
       end: function( event, options ) {
         document.getElementById( "slideshow-transcript" ).innerHTML = "";
