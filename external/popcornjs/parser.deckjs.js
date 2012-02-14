@@ -13,6 +13,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
       eventDiv = document.getElementById( "events" );
 
   function createElement( times ) {
+    console.log( containerWidth );
     var teDiv = document.createElement( "DIV" ),
         spacer = document.createElement( "DIV" );
 
@@ -29,9 +30,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     }
     teDiv.innerHTML = "<p><b></b></p>";
     teDiv.className = "popcorn-slideshow";
-    teDiv.style.float = "left";
 
-    spacer.style.float = "left";
     spacer.className = "spacer";
     
     innerContainer.appendChild( teDiv );
@@ -45,7 +44,6 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         setTimeout( ready, 100 );
       } else {
       container = $( ".vjs-load-progress" )[ 0 ];
-      console.log( container.offsetWidth );
       slides = $( "[popcorn-slideshow]" ).each(function( key, val ) {
 
         var time = val.getAttribute( "popcorn-slideshow" );
@@ -54,15 +52,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         prevTime = time;
       });
 
-      $( document ).bind( "keydown.deckmyextension", function(event) {
-        if ( $.deck( "getOptions" ).keys.next.indexOf( event.which ) > -1 ) {
-          var time = $( ".deck-next")[ 0 ] ? $( ".deck-next" )[ 0 ].getAttribute( "popcorn-slideshow" ) : $( ".deck-current" )[ 0 ].getAttribute( "popcorn-slideshow" );
-          popcorn.currentTime( time );
-        }
-      });
-
       $( document ).bind( "deck.change", function( event, from, to ) {
-        if( from > to ) {
+        if( popcorn.currentTime > trackEvents[ to ] || from > to ) {
           popcorn.currentTime( trackEvents[ to ] );
         }
       });
@@ -86,7 +77,6 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
       div.id = "popcorn-slideshow-div-endPadding";
       div.innerHTML = "<p><b></b></p>";
       div.className = "popcorn-slideshow";
-      div.style.float = "left";
 
       innerContainer.appendChild( div );
       container.appendChild( innerContainer );
