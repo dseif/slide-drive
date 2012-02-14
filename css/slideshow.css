@@ -30,6 +30,7 @@
   width: 99.15%;
   border-radius: 5px;
   margin-top: 19px;
+  font-size: 2em;
   background-color: rgba(0,36,74, 0.4);
   overflow-y: auto;
 }

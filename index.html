@@ -99,6 +99,13 @@
 	  <p>...and still don't know if their results are reliable or not.</p>
 	</div>
       </div>
+    <div class="slide deck-after" popcorn-slideshow="22">
+	<p>...and still don't know if their results are reliable or not</p>
+	<div class="transcript">
+	  <p>...and still don't know if their results are reliable or not.</p>
+	</div>
+      </div>
+
       </section>
 
       <section class="slide deck-after" popcorn-slideshow="24">
@@ -510,6 +517,12 @@
 	/
 	<span class="deck-status-total">12</span>
       </p>
+      <form action="." method="get" class="goto-form">
+        <label for="goto-slide">Go to slide:</label>
+        <input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+        <datalist id="goto-datalist"></datalist>
+        <input type="submit" value="Go">
+      </form>
       
       <a href="#" class="deck-prev-link deck-nav-disabled" title="Previous">←</a>
       <a href="#bugs" class="deck-next-link" title="Next">→</a>
@@ -524,7 +537,7 @@
 <div id="slideshow-transcript" class="popcorn-transcript"></div>
 
 <!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
-<script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
 <script>window.jQuery || document.write('<script src="external/jquery/jquery-1.7.min.js"><\/script>')</script>
 
 <!-- Deck Core and extensions -->

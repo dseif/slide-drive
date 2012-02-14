@@ -374,23 +374,25 @@ var AudioJS = Class.extend({
 
   // Track & display the current play progress
   trackPlayProgress: function(){
-    this.playProgressInterval = setInterval(function(){ this.updatePlayProgress(); }.context(this), 33);
   },
 
   // Turn off play progress tracking (when paused)
   stopTrackingPlayProgress: function(){
-    clearInterval(this.playProgressInterval);
   },
 
   // Ajust the play progress bar's width based on the current play time
   updatePlayProgress: function(){
     if (this.controls.style.display == 'none') return;
-    this.playProgress.style.width = ((this.audio.currentTime / this.audio.duration) * (_V_.getComputedStyleValue(this.progressHolder, "width").replace("px", ""))) + "px";
-    this.updateTimeDisplay();
+    var that = this;
+    Popcorn.instances[ 0 ].listen( "timeupdate", function( e ) {
+      that.playProgress.style.width = ((this.currentTime() / this.duration()) * (_V_.getComputedStyleValue(that.progressHolder, "width").replace("px", ""))) + "px";
+      that.updateTimeDisplay();
+    });
   },
 
   // Update the play position based on where the user clicked on the progresss bar
   setPlayProgress: function(newProgress){
+                     console.log( newProgress );
     this.audio.currentTime = newProgress * this.audio.duration;
     this.playProgress.style.width = newProgress * (_V_.getComputedStyleValue(this.progressHolder, "width").replace("px", "")) + "px";
     this.updateTimeDisplay();
