@@ -23,7 +23,8 @@ $(function() {
 
   var resize = function() {
     var elem = document.getElementById( "slideshow-transcript" );
-    elem.style.height = document.body.offsetHeight - elem.offsetTop + 15  + "px";
+    elem.style.height = (document.body.offsetHeight - elem.offsetTop - 3)   + "px";
+    elem.style.maxWidth = (document.body.offsetWidth - 11)+ "px";
   };
   window.addEventListener( "resize", function( e ) {
     resize();
