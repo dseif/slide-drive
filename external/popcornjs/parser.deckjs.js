@@ -40,7 +40,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
   function ready(){
     if( $( ".vjs-load-progress" )[ 0 ] ) {
-      if( $( ".vjs-load-progress" )[ 0 ].offsetWidth < 1100 ) {
+      if( $( ".vjs-load-progress" )[ 0 ].offsetWidth < 100 ) {
         setTimeout( ready, 100 );
       } else {
       container = $( ".vjs-load-progress" )[ 0 ];
@@ -53,7 +53,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
       });
 
       $( document ).bind( "deck.change", function( event, from, to ) {
-        if( popcorn.currentTime > trackEvents[ to ] || from > to ) {
+        if( popcorn.currentTime() < trackEvents[ to ] || from > to ) {
           popcorn.currentTime( trackEvents[ to ] );
         }
       });

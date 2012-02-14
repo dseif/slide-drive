@@ -2,7 +2,7 @@
   height: 98%;
   position: relative;
   background-color: #00244a;
-  display: inline-block;
+  display: inline;
   color: #DDDEE3;
   float: left;
 }
@@ -19,7 +19,7 @@
   width: 1px;
   height: 1px;
   position: relative;
-  display: inline-block;
+  display: inline;
   float: left;
 }
 
