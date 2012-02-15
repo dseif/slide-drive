@@ -1,6 +1,10 @@
 $(function() {
 	// Deck initialization
-  AudioJS.setup();
+  $("audio").mediaelementplayer({
+    success: function( mediaElement, domObject ) {
+      window.playerReady = true;
+    }
+  });
 	$.deck('.slide');
 	
 	$('#style-themes').change(function() {

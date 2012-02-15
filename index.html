@@ -8,11 +8,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>Software Carpentry in 90 Seconds</title>
 
-  <script src="external/audiojs/audio.js" type="text/javascript" charset="utf-8"></script>
-  <link rel="stylesheet" href="external/audiojs/audio-js.css" type="text/css" media="all" title="Audio JS" charset="utf-8">
-  <link rel="stylesheet" href="external/audiojs/audio-js.css" type="text/css" media="all" title="Audio JS" charset="utf-8">
-
-  <!-- Core and extension CSS files -->
+    <!-- Core and extension CSS files -->
   <link rel="stylesheet" href="external/deckjs/core/deck.core.css">
   <link rel="stylesheet" href="external/deckjs/extensions/goto/deck.goto.css">
   <link rel="stylesheet" href="external/deckjs/extensions/menu/deck.menu.css">
@@ -26,7 +22,6 @@
   <!-- Custom CSS just for this page -->
   <link rel="stylesheet" href="css/slideshow.css">
 	
-  <link rel="stylesheet" href="../themes/transition/horizontal-slide.css"> <!-- transitions -->
   <script src="external/modernizr/modernizr.custom.js"></script>
 
   <!-- Popcorn scripts -->
@@ -390,18 +385,19 @@
       
   </div>
 
-  <div class="audio-js-box">
-    <audio class="audio-js" id="audio" controls preload="auto" style="display:none;">
-      <source src="media/pitch.ogg"/>
-      <source src="media/pitch.mp3"/>
-    </audio>
-  </div>
+  <audio id="audio" controls preload="auto" style="display:none;width:100%;">
+    <source src="media/pitch.ogg"/>
+    <source src="media/pitch.mp3"/>
+  </audio>
 
   <div id="slideshow-transcript" class="popcorn-transcript"></div>
 
   <!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
   <script>window.jQuery || document.write('<script src="external/jquery/jquery-1.7.min.js"><\/script>')</script>
+    
+  <script src="external/mediaelement/build/mediaelement-and-player.min.js"></script>
+  <link rel="stylesheet" href="external/mediaelement/build/mediaelementplayer.css" />
 
     <!-- Deck Core and extensions -->
     <script src="external/deckjs/core/deck.core.js"></script>
