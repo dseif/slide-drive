@@ -6,6 +6,15 @@ $(function() {
     }
   });
 	$.deck('.slide');
+  $.deck('enableScale');
+  $.extend(true, $.deck.defaults, {
+    classes: {
+      menu: 'deck-menu'
+    },
+    keys: {
+      menu: 77 // 'm'
+    }
+  });
 	
 	$('#style-themes').change(function() {
 		$('#style-theme-link').attr('href', $(this).val());
