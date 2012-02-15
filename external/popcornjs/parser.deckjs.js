@@ -3,6 +3,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
   var container,
       innerContainer = document.createElement( "span" ),
       slides,
+      userAgent = navigator.userAgent.split( " " ),
       trackEvents = [],
       prevTime = 0,
       count = 0,
@@ -21,14 +22,19 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
  
     if( innerContainer.children.length === 0 ) {
       innerContainer.appendChild( teDiv );
-    innerContainer.appendChild( spacer );
+      innerContainer.appendChild( spacer );
       teDiv.style.width = ( pixelsPerSecond * +trackEvents[ times ] ) / ( container.offsetWidth / 100 ) + "%";
       teDiv.id = "popcorn-slideshow-div-startPadding";
       recurse = true;
     } else {
       innerContainer.appendChild( teDiv );
-    innerContainer.appendChild( spacer );
-      teDiv.style.width =  ( pixelsPerSecond * ( endTime - +trackEvents[ times ] ) ) / ( ( container.offsetWidth + ( count + 1 ) ) / 100 ) + "%";
+      innerContainer.appendChild( spacer );
+      // such a gross block of code, must fix this
+      if( userAgent[ userAgent.length - 1 ].split( "/" )[ 0 ] === "Firefox" ) {
+        teDiv.style.width = ( pixelsPerSecond * ( endTime - +trackEvents[ times ] ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
+      } else {
+        teDiv.style.width = ( pixelsPerSecond * ( endTime - +trackEvents[ times ] ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
+      }
       teDiv.id = "popcorn-slideshow-div-" + count;
     }
 
@@ -41,7 +47,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
   }
 
   function ready() {
-    if( window.playerReady && popcorn ) {
+    if( window.playerReady && popcorn.readyState() >= 2 ) {
       container = $( ".mejs-time-total" )[ 0 ];
       slides = $( "[popcorn-slideshow]" ).each(function( key, val ) {
 
@@ -61,6 +67,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
       pixelsPerSecond = containerWidth / popcorn.duration();
 
       container.insertBefore( innerContainer, container.children[ 1 ] );
+      container.removeChild( container.children[ 0 ] );
       innerContainer.className += " innerContainer";
       for( var i = 0, l = trackEvents.length; i < l; i++ ) {
         createElement( i );
@@ -76,7 +83,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
       var div = document.createElement( "span" );
       innerContainer.appendChild( div );
 
-      div.style.width = ( pixelsPerSecond * ( popcorn.duration() - +trackEvents[ trackEvents.length - 1 ] ) ) / ( ( container.offsetWidth + count ) / 100 ) + "%";
+      div.style.width = ( ( container.getBoundingClientRect().right - innerContainer.children[ innerContainer.children.length - 2 ].getBoundingClientRect().right ) / container.offsetWidth ) * 100 + "%";
       div.id = "popcorn-slideshow-div-endPadding";
       div.innerHTML = "<p><b></b></p>";
       div.className = "popcorn-slideshow";

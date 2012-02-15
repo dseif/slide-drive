@@ -10,10 +10,10 @@
 
 .spacer {
   width: 1px !important;
+  height: 1px;
   position: relative;
-  display: inline-block !important;
-  background-color: rgba(255,255,255, 0.9) !important;
-  float: left !important;
+  display: inline-block;
+  background-color: rgba(255,255,255, 0.9);
 }
 
 .innerContainer {
