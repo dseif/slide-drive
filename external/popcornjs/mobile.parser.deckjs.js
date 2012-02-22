@@ -48,11 +48,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
   function ready() {
 
-console.log( window.playerReady );
-console.log( document.getElementById( "audio" ).duration );
     if( window.playerReady && document.getElementById( "audio" ).duration >= 0 ) {
 
-console.log( "READY" );
       popcorn = Popcorn( "#audio", { frameAnimation: true });
       container = $( ".mejs-time-total" )[ 0 ];
       slides = $( "[popcorn-slideshow]" ).each(function( key, val ) {
