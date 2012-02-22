@@ -16,6 +16,13 @@ $(function() {
     }
   });
 	
+  document.addEventListener( "keydown", function( e ) {
+    if( e.keyCode === 80 ) {
+      var elem = document.getElementById( "audio" );
+      !elem.paused ? elem.pause() : elem.play();
+    }
+  }, false);
+
 	$('#style-themes').change(function() {
 		$('#style-theme-link').attr('href', $(this).val());
 	});
