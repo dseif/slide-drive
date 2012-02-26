@@ -1,0 +1,47 @@
+.deck-print .slide {
+  background: #eee;
+  position: relative;
+  left: 0;
+  top: 0;
+  visibility: visible;
+  cursor: pointer;
+}
+.no-csstransforms .deck-print > .slide {
+  float: left;
+  width: 22%;
+  height: 22%;
+  min-height: 0;
+  margin: 1%;
+  font-size: 0.22em;
+  overflow: hidden;
+  padding: 0 0.5%;
+}
+.csstransforms .deck-print > .slide {
+  -webkit-transform: scale(0.22);
+  -moz-transform: scale(0.22);
+  -o-transform: scale(0.22);
+  -ms-transform: scale(0.22);
+  transform: scale(0.22);
+  -webkit-transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -o-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 0 48px;
+  margin: 12px;
+}
+.deck-print iframe, .deck-print img, .deck-print video {
+  max-width: 100%;
+}
+.deck-print .deck-current, .no-touch .deck-print .slide:hover {
+  background: #ddf;
+}
+.deck-print.deck-container:hover .deck-prev-link, .deck-print.deck-container:hover .deck-next-link {
+  display: none;
+}

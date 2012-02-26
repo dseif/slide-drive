@@ -7,14 +7,6 @@ $(function() {
   });
 	$.deck('.slide');
   $.deck('enableScale');
-  $.extend(true, $.deck.defaults, {
-    classes: {
-      menu: 'deck-menu'
-    },
-    keys: {
-      menu: 77 // 'm'
-    }
-  });
 	
   document.addEventListener( "keydown", function( e ) {
     if( e.keyCode === 80 ) {
@@ -44,7 +36,7 @@ $(function() {
   var resize = function() {
     var elem = document.getElementById( "slideshow-transcript" );
     elem.style.height = (document.body.offsetHeight - elem.offsetTop - 3)   + "px";
-    elem.style.maxWidth = (document.body.offsetWidth - 11)+ "px";
+    elem.style.maxWidth = (document.body.offsetWidth)+ "px";
   };
   window.addEventListener( "resize", function( e ) {
     resize();
