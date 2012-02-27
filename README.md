@@ -5,5 +5,7 @@ Slide-drive
 Keyboard commands
 -----------------
 * play or pause: p
-* next slide: spacebar, right arrow
-* previous slide: backspace, left arrow
+* next slide: spacebar, right arrow, up arrow
+* previous slide: backspace, left arrow, down arrow
+* show slide menu: m
+* go to slide: g
