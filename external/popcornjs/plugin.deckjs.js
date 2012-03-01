@@ -27,7 +27,6 @@
         }
       },
       _setup: function( options ) {
-        $.deck( ".slide" );
       }, 
       start: function( event, options ) {
         $.deck( "go", +options.slide );

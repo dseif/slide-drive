@@ -32,3 +32,34 @@
   background-color: rgba(0,36,74, 0.4);
   overflow-y: auto;
 }
+
+.printable-slide {
+  min-height: 400px;
+  height: 100%;
+  width: 49%;
+  display: inline-block;
+  border-right-style: solid !important;
+  border-right-width: 1px !important;
+  border-right-color: black !important;
+}
+
+.printable-transcript {
+  height: 100%;
+  width: 49%;
+  float: right;
+}
+
+.printable-container {
+  width: 100%;
+  float: left;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: black !important;
+}
+
+.printable-body {
+  width: 100%;
+  height: 100% !important;
+  overflow: auto !important;
+  padding: 0 0px;
+}

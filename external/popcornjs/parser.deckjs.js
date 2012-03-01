@@ -48,6 +48,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
   function ready() {
     if( window.playerReady && popcorn.readyState() >= 2 ) {
+
+      $.deck( ".slide" );
       container = $( ".mejs-time-total" )[ 0 ];
       slides = $( "[popcorn-slideshow]" ).each(function( key, val ) {
 
