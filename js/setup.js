@@ -40,9 +40,10 @@ $(function() {
       if( slide.children[ 0 ] && slide.children[ 0 ].children[ 0 ] ) {
 
         var trans = slide.children[ 0 ].querySelectorAll(".transcript"),
-            slides = slide.children[ 0 ].children[ 0 ].querySelectorAll(".slide"),
+            slides = slide.children[ 0 ].querySelectorAll(".slide"),
             innerTrans = "";
 
+        console.log( slides.length );
         if( slides.length > 0 ) {
           for( var j = 0, k = slides.length; j < k; j++ ) {
             slides[ j ].className = "slide deck-current";
@@ -51,7 +52,7 @@ $(function() {
         if( trans.length > 0 ) {
           for( var a = 0, s = trans.length; a < s; a++ ) {
            innerTrans += trans[ a ].innerHTML + "\n";
-          } 
+          }
           transcript.innerHTML = innerTrans;
         }
       }
