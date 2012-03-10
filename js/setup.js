@@ -56,9 +56,21 @@ $(function() {
         }
       }
 
+      
       slideContainer.appendChild( slide );
       slideContainer.appendChild( transcript );
       body.appendChild( slideContainer );
+      (function( sl, tr ) {
+        function resize() {
+          var rect = sl.getBoundingClientRect();
+          if( rect.height > 0 ) {
+            tr.style.height = rect.height + "px";
+          } else {
+            setTimeout( resize, 100 );
+          }
+        }
+        resize();
+      })( slide, transcript );
     }
   };
 

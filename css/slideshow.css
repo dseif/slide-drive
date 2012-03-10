@@ -38,23 +38,23 @@
   height: 100%;
   width: 49%;
   display: inline-block;
-  border-right-style: solid !important;
-  border-right-width: 1px !important;
-  border-right-color: black !important;
-}
-
-.printable-transcript {
-  height: 100%;
-  width: 49%;
-  float: right;
-}
-
-.printable-container {
-  width: 100%;
-  float: left;
   border-style: solid !important;
   border-width: 1px !important;
   border-color: black !important;
+}
+
+.printable-transcript {
+  width: 49%;
+  float: right;
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: black !important;
+}
+
+.printable-container {
+  width: 98%;
+  float: left;
+  padding: 1% 1% 0% 1%;
 }
 
 .printable-body {
