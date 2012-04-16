@@ -1,8 +1,11 @@
 $(function() {
+  var popcorn;
+
 	// Deck initialization
   $("audio").mediaelementplayer({
     success: function( mediaElement, domObject ) {
       window.playerReady = true;
+      popcorn = Popcorn( mediaElement );
     }
   });
 
@@ -26,14 +29,39 @@ $(function() {
     for( var i = 0, l = bodyChildren.length; i < l; i++ ) {
       var slideContainer = document.createElement("slideContainer"),
           slide = document.createElement( "div" ),
-          transcript = document.createElement( "div" );
+          transcript = document.createElement( "div" ),
+          gotoLink = document.createElement( "a" );
 
       slideContainer.className = "printable-container";
 
       slide.className = "printable-slide";
       transcript.className = "printable-transcript";
+      gotoLink.href = "#";
+      gotoLink.textContent = "Go to Slide";
+      
+      slide.style.position = "relative";
+      gotoLink.style.zIndex = 10;
+      gotoLink.style.background = "white";
+      gotoLink.style.position = "absolute";
+      gotoLink.style.bottom = ".5em";
+      gotoLink.style.left = ".5em";
+      gotoLink.style.padding = ".25em";
+      gotoLink.style.border = "1px solid #888";
+      gotoLink.style.fontSize = "75%";
+      gotoLink.setAttribute("data-target-time", bodyChildren[ i ].getAttribute( "popcorn-slideshow" ));
+
+      gotoLink.addEventListener( "click", function() {
+        popcorn.currentTime(this.getAttribute("data-target-time"));
+        
+        document.getElementById( "printable" ).style.display = "none";
+        document.getElementById( "main" ).style.display = "";
+        showingPrintable = false;
+        
+        return false;
+      }, false );
 
       slide.appendChild( bodyChildren[ i ].cloneNode(true) );
+      slide.appendChild( gotoLink );
 
       slide.children[ 0 ].className = "slide deck-child-current";
 
