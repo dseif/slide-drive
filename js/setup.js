@@ -50,8 +50,8 @@ $(function() {
         document.getElementById( "printable" ).style.display = "none";
         document.getElementById( "main" ).style.display = "";
         showingPrintable = false;
-        document.getElementById( "audio" ).pause();
-        return true;
+        $.deck("go", String(this.href).substr(1));
+        return false;
       }, false );
 
       slide.appendChild( bodyChildren[ i ].cloneNode(true) );
