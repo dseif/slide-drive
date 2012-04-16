@@ -36,21 +36,13 @@ $(function() {
       gotoLink.href = "#" + bodyChildren[ i ].getAttribute( "id" );
       gotoLink.textContent = "Go to Slide";
       
-      slide.style.position = "relative";
-      gotoLink.style.zIndex = 10;
-      gotoLink.style.background = "white";
-      gotoLink.style.position = "absolute";
-      gotoLink.style.bottom = ".5em";
-      gotoLink.style.left = ".5em";
-      gotoLink.style.padding = ".25em";
-      gotoLink.style.border = "1px solid #888";
-      gotoLink.style.fontSize = "75%";
+      gotoLink.className = "print-nav-link";
 
       gotoLink.addEventListener( "click", function() {
         document.getElementById( "printable" ).style.display = "none";
         document.getElementById( "main" ).style.display = "";
         showingPrintable = false;
-        $.deck("go", String(this.href).substr(1));
+        $.deck("go", this.href.substr(1));
         return false;
       }, false );
 
