@@ -1,11 +1,8 @@
 $(function() {
-  var popcorn;
-
 	// Deck initialization
   $("audio").mediaelementplayer({
     success: function( mediaElement, domObject ) {
       window.playerReady = true;
-      popcorn = Popcorn( mediaElement );
     }
   });
 
@@ -36,7 +33,7 @@ $(function() {
 
       slide.className = "printable-slide";
       transcript.className = "printable-transcript";
-      gotoLink.href = "#";
+      gotoLink.href = "#" + bodyChildren[ i ].getAttribute( "id" );
       gotoLink.textContent = "Go to Slide";
       
       slide.style.position = "relative";
@@ -48,16 +45,13 @@ $(function() {
       gotoLink.style.padding = ".25em";
       gotoLink.style.border = "1px solid #888";
       gotoLink.style.fontSize = "75%";
-      gotoLink.setAttribute("data-target-time", bodyChildren[ i ].getAttribute( "popcorn-slideshow" ));
 
       gotoLink.addEventListener( "click", function() {
-        popcorn.currentTime(this.getAttribute("data-target-time"));
-        
         document.getElementById( "printable" ).style.display = "none";
         document.getElementById( "main" ).style.display = "";
         showingPrintable = false;
-        
-        return false;
+        document.getElementById( "audio" ).pause();
+        return true;
       }, false );
 
       slide.appendChild( bodyChildren[ i ].cloneNode(true) );
