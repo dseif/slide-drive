@@ -35,15 +35,13 @@ $(function() {
       transcript.className = "printable-transcript";
       gotoLink.href = "#" + bodyChildren[ i ].getAttribute( "id" );
       gotoLink.textContent = "Go to Slide";
-      
+
       gotoLink.className = "print-nav-link";
 
       gotoLink.addEventListener( "click", function() {
         document.getElementById( "printable" ).style.display = "none";
         document.getElementById( "main" ).style.display = "";
         showingPrintable = false;
-        $.deck("go", this.href.substr(1));
-        return false;
       }, false );
 
       slide.appendChild( bodyChildren[ i ].cloneNode(true) );
