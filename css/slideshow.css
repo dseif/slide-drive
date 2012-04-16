@@ -41,6 +41,7 @@
   border-style: solid !important;
   border-width: 1px !important;
   border-color: black !important;
+  position: relative;
 }
 
 .printable-transcript {
@@ -62,4 +63,23 @@
   height: 100% !important;
   overflow: auto !important;
   padding: 0 0px;
+}
+
+@media screen {
+  .print-nav-link {
+    z-index: 10;
+    background-color: white;
+    position: absolute;
+    bottom: .5em;
+    left: .5em;
+    padding: .25em;
+    border: 1px solid #888;
+    font-size: 75%;
+  }
+}
+
+@media print {
+  .print-nav-link {
+    display: none;
+  }
 }

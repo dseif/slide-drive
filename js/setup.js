@@ -26,14 +26,26 @@ $(function() {
     for( var i = 0, l = bodyChildren.length; i < l; i++ ) {
       var slideContainer = document.createElement("slideContainer"),
           slide = document.createElement( "div" ),
-          transcript = document.createElement( "div" );
+          transcript = document.createElement( "div" ),
+          gotoLink = document.createElement( "a" );
 
       slideContainer.className = "printable-container";
 
       slide.className = "printable-slide";
       transcript.className = "printable-transcript";
+      gotoLink.href = "#" + bodyChildren[ i ].getAttribute( "id" );
+      gotoLink.textContent = "Go to Slide";
+
+      gotoLink.className = "print-nav-link";
+
+      gotoLink.addEventListener( "click", function() {
+        document.getElementById( "printable" ).style.display = "none";
+        document.getElementById( "main" ).style.display = "";
+        showingPrintable = false;
+      }, false );
 
       slide.appendChild( bodyChildren[ i ].cloneNode(true) );
+      slide.appendChild( gotoLink );
 
       slide.children[ 0 ].className = "slide deck-child-current";
 
