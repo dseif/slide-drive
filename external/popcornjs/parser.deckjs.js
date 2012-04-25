@@ -55,7 +55,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
         var time = val.getAttribute( "popcorn-slideshow" );
 
-        trackEvents.push( time );
+        trackEvents.push( key > 0 ? time : 0 );
         prevTime = time;
       });
 
@@ -73,7 +73,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
       innerContainer.className += " innerContainer";
       for( var i = 0, l = trackEvents.length; i < l; i++ ) {
         createElement( i );
-        var end = ( i + 1 ) > trackEvents.length - 1 ? +trackEvents[ i ] + 1 : +trackEvents[ i + 1 ];
+        var end = ( i + 1 ) > trackEvents.length - 1 ? popcorn.duration() + 1 : +trackEvents[ i + 1 ];
         popcorn.deckjs({
           start: trackEvents[ i ],
           end: end,
