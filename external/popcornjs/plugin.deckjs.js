@@ -1,5 +1,5 @@
 (function ( Popcorn ) {
-    
+
   Popcorn.plugin( "deckjs" , {
       manifest: {
         about: {
@@ -30,7 +30,17 @@
       }, 
       start: function( event, options ) {
         $.deck( "go", +options.slide );
-        document.getElementById( "slideshow-transcript" ).innerHTML = $( ".transcript" )[ +options.slide ].innerHTML;
+
+        var transcriptSource = $( ".transcript" )[ +options.slide ];
+
+        if ( transcriptSource.innerHTML != null ) {
+          document.getElementById( "slideshow-transcript" ).innerHTML = transcriptSource.innerHTML;
+        } else {
+          // It's a non-HTML node. We'll treat its textContent *AS HTML*.
+          // For example, <text x="0" y="0" class="transcript"><![CDATA[<b>This</b> is a transcript!]]></text>
+          document.getElementById( "slideshow-transcript" ).innerHTML = transcriptSource.textContent;
+        }
+
         document.getElementById( "slideshow-transcript" ).style.padding = "5px 5px 5px 5px";
       },
       end: function( event, options ) {
