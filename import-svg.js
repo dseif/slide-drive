@@ -161,7 +161,7 @@ jQuery( function ( $ ) {
         slides = $( "section.slide", this ).map( function () {
           return {
             element: $( "svg", this )[0],
-            transcript: $( "textarea", this ).val(),
+            transcriptSource: $( "textarea", this ).val(),
             duration: +$( "input", this ).val(),
           }
         } ),
@@ -202,10 +202,15 @@ jQuery( function ( $ ) {
     for ( var i = 0; i < slides.length; i++ ) {
       var newSlide = doc.createElement( "section" ),
           newTranscript = doc.createElement( "div" );
+
+      newTranscript.innerHTML = slides[ i ].transcriptSource;
+      newTranscript.setAttribute( "class", "transcript" );
+
       newSlide.setAttribute( "popcorn-slideshow", String(cumulativeDuration) );    
       newSlide.setAttribute( "class", "slide" );
+      newSlide.appendChild( newTranscript )
       newSlide.appendChild( slides[ i ].element );
-      newTranscript.innerHTML = slides[ i ].transcriptSource;
+
       cumulativeDuration += slides[ i ].duration;
       slideContainer.appendChild( newSlide );
     }
