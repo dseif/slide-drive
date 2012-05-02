@@ -96,14 +96,12 @@ document.addEventListener( "DOMContentLoaded", function ( event ) {
                 target: "popcorn-slideshow-div-" + count
               };
         
-          if ( !butterTrack ) {
-            popcorn.deckjs(options);
-          } else {
+          if ( butterTrack ) {
             butterTrack.addTrackEvent({
               type: "deckjs",
               popcornOptions: options
             });
-          }
+          } // else Butter should have exported these events into the document already
           count++;
         }
         var div = document.createElement( "span" );
@@ -114,7 +112,7 @@ document.addEventListener( "DOMContentLoaded", function ( event ) {
         div.innerHTML = "<p><b></b></p>";
         div.className = "popcorn-slideshow";
       } else {
-        setTimeout( ready, 100 );
+        setTimeout( ready, 100, butterTrack );
       }
     }
     ready();

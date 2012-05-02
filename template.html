@@ -25,6 +25,81 @@
 	
   <script src="external/modernizr/modernizr.custom.js"></script>
 
+<script>
+document.addEventListener( "DOMContentLoaded", function ( event ) {
+  // snapshot once DOM is loded, before doing anything else
+  // but this excludes scripts that are only added by butter, after it has loaded.
+  // So, manually for the moment, what are those?
+  var initialHead = document.getElementsByTagName( "head" )[ 0 ].cloneNode( true );
+  var initialBody = document.getElementsByTagName( "body" )[ 0 ].cloneNode( true );
+  initialHead.innerHTML += '<script src="../external/popcorn-js/popcorn.js"><\/script>';
+  initialHead.innerHTML += '<script src="external/popcornjs/plugin.deckjs.js"><\/script>';
+  initialHead.innerHTML += '<script src="../external/popcorn-js/modules/player/popcorn.player.js"><\/script>';
+  
+  /* Replacing the .getHTML method on our butter.
+     The trunk has something like this now, so we don't need to submit a patch,
+     but I'm not working off of trunk because it wasn't stable enough.
+  */
+  window.Butter && setTimeout( function () {
+    console.log("Patching Butter::getHTML.")
+    butter.getHTML = function(  ){
+      var popcornStrings = [];
+      for( var i=0; i<butter.media.length; ++i ){
+        popcornStrings.push( butter.media[ i ].popcornString );
+      } //for
+      
+      var html = document.createElement( "html" ),
+          head = initialHead || document.getElementsByTagName( "head" )[ 0 ].cloneNode( true ),
+          body = initialBody || document.getElementsByTagName( "body" )[ 0 ].cloneNode( true ),
+          i, toClean, toExclude, node;
+
+      toExclude = Array.prototype.slice.call( head.querySelectorAll( "*[data-butter-exclude]" ) );
+      toExclude = toExclude.concat( Array.prototype.slice.call( head.querySelectorAll( "*[data-requiremodule]" ) ) );
+      for ( i = 0, l = toExclude.length; i < l; ++i ) {
+        node = toExclude[ i ];
+        node.parentNode.removeChild( node );
+      } //for
+
+      toClean = body.querySelectorAll( "*[butter-clean=\"true\"]" );
+      for ( i = 0, l = toClean.length; i < l; ++i ) {
+        node = toClean[ i ];
+        node.removeAttribute( "butter-clean" );
+        node.removeAttribute( "data-butter" );
+
+        // obviously, classList is preferred (https://developer.mozilla.org/en/DOM/element.classList)
+        if( node.classList ){
+          node.classList.remove( "ui-droppable" );
+        }
+        else{
+          node.className = node.className.replace( /ui-droppable/g, "" );
+        } //if
+      } //for
+
+      toExclude = body.querySelectorAll( "*[data-butter-exclude]" );
+      for ( i = 0, l = toExclude.length; i < l; ++i ) {
+        node = toExclude[ i ];
+        node.parentNode.removeChild( node );
+      } //for
+
+      html.appendChild( head );
+      html.appendChild( body );
+
+      if( popcornStrings ){
+        for ( i = 0; i < popcornStrings.length; ++i ) {
+          var script = document.createElement( "script" );
+          script.type = "text/javascript";
+          script.innerHTML = "(function(){\n" + popcornStrings[ i ] + "\n}());";
+          body.appendChild( script );
+        } //for
+      } //if
+
+      return "<html>" + html.innerHTML + "</html>";
+    }; //getHTML
+  }, 2000 );
+});
+
+</script>
+
   <!-- project-container class determines the size of the container.
        This contains the slideshow, media element, and transcript
        deck-container will override height set by deckjs to whatever you desire
@@ -54,7 +129,6 @@
         <div class="transcript">
           This screencast is a quick introduction to the Software Carpentry product.
         </div>
-        <?xml version="1.0" encoding="UTF-8"?>
         <svg version="1.2" baseProfile="tiny" viewBox="0 0 28000 21000" preserveAspectRatio="xMidYMid" fill-rule="evenodd" clip-path="url(#presentation_clip_path)" stroke-width="28.222" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xml:space="preserve">
          <defs>
           <clipPath id="presentation_clip_path" clipPathUnits="userSpaceOnUse">
