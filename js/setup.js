@@ -107,7 +107,14 @@ $(function() {
   }, false);
   $(document).bind('deck.change', function(event, from, to) {
     var container = $( ".deck-container" )[ 0 ],
-        slide = $.deck( "getSlide", to )[ 0 ];
+        slide = $.deck( "getSlide", to )[ 0 ],
+        parentSlides = $( slide ).parents( ".slide" );
+    
+    // Size should be based on height of the current master slide, not sub-slide.
+    if (parentSlides.length) {
+      slide = parentSlides[ parentSlides.length - 1 ];
+    }
+    
     if( slide.offsetHeight > container.offsetHeight) {
       container.style.overflowY = "auto";
     } else {
