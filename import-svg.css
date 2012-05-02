@@ -1,0 +1,70 @@
+.dropCandidate {
+  background: #FFC;
+}
+
+#wrapper {
+  margin: 0 auto;
+  width: 50em;
+  padding: .5em 1em;
+  font-family: Georgia;
+  
+}
+
+h1 {
+  font-size: 160%;
+  margin: 1em 0;
+}
+
+h2 {
+  font-size: 125%;
+}
+
+#wrapper section {
+  border: 1px solid #888;
+  background: #EEE;
+  padding: .5em;
+  margin: .5em;  
+}
+
+#wrapper section h2 {
+  margin-top: 0;
+}
+
+  #wrapper section.slide svg {
+    border: 1px solid black;
+    float: right;
+    width: 400px;
+    height: 300px;
+    margin: .5em;
+    background: white;
+  }
+  
+  #wrapper section.slide textarea {
+    width: 40%;
+    height: 5em;
+    font-family: inherit;
+  }
+
+.buttonBumper {
+  margin-top: 1em;
+  margin-bottom: 2em;
+  text-align: center;
+}
+
+  .buttonBumper .majorAction {
+    font-size: 200%;
+    border: 1px solid black;
+    background: #EEE;
+    box-shadow: 0 0 3px 0 #000;
+      cursor: pointer;
+  }
+
+  .buttonBumper .majorAction:hover {
+    background: #DDD;
+    box-shadow: 0 0 6px 2px #000;
+  }
+
+  .buttonBumper .majorAction:active {
+    background: #FFC;
+    box-shadow: 0 0 6px 2px #880;
+  }
