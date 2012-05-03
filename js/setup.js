@@ -1,25 +1,254 @@
-$(function() {
-	// Deck initialization
-  $("audio").mediaelementplayer({
-    success: function( mediaElement, domObject ) {
-      window.playerReady = true;
+jQuery(function ($) {
+  /*
+    Three modes:
+    - Standard
+    - in Butter
+      - Non-butter keyboard shortcuts disabled
+      - Semantic interpretation targets Butter timeline
+    - from Butter
+      - Semantic interpretation disabled
+    
+    
+    - Define unique ids for every slide.
+    
+    - Wait for Butter
+    - Initialize player
+    - Wait for playerReady and readyState
+    
+    - Have our own way to generate unique identifiers, rather than relying on Deck's sequential ones.
+      - .text().strip().slice(20) +  + .slice(-10)
+    
+    - Parse
+    - Initialize Deck.js
+    
+    - We need persistent identifiers for slides. Relying on Deck.js' is bad, because they aren't
+      available until it's manipulated the DOM into a bad state. Make our own:
+        
+  */
+  
+  var printableElement = null,
+      showingPrintable = false,
+      inButter         = !!window.Butter,
+      butter           = null,
+      fromButter       = !inButter && $( "meta[name=generator][content^='Mozilla Butter']" ).length > 0,
+      popcorn          = null,
+      slideData        = null;
+  
+  init();
+  
+  function init () {
+    console.log( "Starting Slide Drive initialization." );
+    
+    initSlideIds();
+    
+    if ( inButter ) {
+      Butter({
+        config: "butter.conf",
+        ready: function ( butter_ ) {
+          butter = butter_;
+          window.butter = butter; // TODO remove this after debugging
+          initMediaAndWait();
+        }
+      });
+    } else {
+      initMediaAndWait();
     }
-  });
+  }
+  
+  // Initializes the media player then waits for media to be ready.
+  function initMediaAndWait () {
+    console.log( "Initializing media player and waiting for it to be ready." );
+    
+    popcorn = Popcorn( "#audio", { frameAnimation: true });;
+    
+    var pollUntilReady;
+    
+    $("audio").mediaelementplayer({
+      success: pollUntilReady = function () {
+        if ( popcorn.readyState() >= 2 ) {
+          if ( !inButter ) {
+            initAfterMediaReady()
+          } else {
+            butter.media[ 0 ].onReady(function () { 
+              initAfterMediaReady();
+            });
+          }
+        } else {
+          setTimeout( pollUntilReady, 250 );
+        }
+      }
+    });
+  }
+  
+  // Initialization to take place after media (and Butter)? is ready.
+  function initAfterMediaReady () {
+    console.log( "Media ready, continuing initialization." );
+    
+    $.deck( ".slide" );
+    // Parse slide data into live Popcorn events or Butter timeline events.
+    if ( !fromButter ) {
+      slideData = parseSides( $.deck( "getSlides" ).map( function (x) { return x[0]; } ) );
+      
+      var butterTrack,
+          addEvent = inButter ? function ( options ) { butterTrack.addTrackEvent({ type: "slidedrive", popcornOptions: options }); }
+                              : function ( options ) { popcorn.slidedrive( options ); }
+      
+      if ( inButter ) {
+        var butterTrack = butter.media[ 0 ].addTrack( "Slides" );
+      }
+      
+      for ( var i = 0; i < slideData.length; i++ ) {
+        addEvent({
+          start: slideData[ i ].start,
+          end: slideData[ i ].end,
+          transcriptSource: slideData[ i ].transcriptSource,
+          slideId: slideData[ i ].id
+          // no target?
+        });
+      }
+    }
+    
+    // $.deck.enableScale();
+    
+    initEvents();
+    initTimelineTargets();
+  }
+  
+  // Initialize keyboard shorcuts (disable Deck's if in Butter, else enable our own).
+  // Oh, and Popcorn responses to Deck card changes, too!
+  function initEvents () {
+    if ( inButter ) {
+      console.log( "Disabling Deck.js keyboard shortcuts." );
+      
+      var keyOptions = $.deck( "getOptions" ).keys;
+      for ( var command in keyOptions ) {
+        if ( keyOptions[ command ] && keyOptions[ command ].length ) {
+          keyOptions[ command ] = [];
+        }
+      }
+    } else {
+      console.log( "Enabling our keyboard shortcuts." );
+      
+      document.addEventListener( "keydown", function( e ) {
+        if ( e.keyCode === 80 ) {
+          var elem = document.getElementById( "audio" );
+          !elem.paused ? elem.pause() : elem.play();
+        } else if( e.keyCode === 84 ) {
+          if( !printableElement ) {
+            printableElement = initPrintable();
+          }
+          if( !showingPrintable ) {
+            printableElement.style.display = "";
+            document.getElementById( "main" ).style.display = "none";
+          } else {
+            printableElement.style.display = "none";
+            document.getElementById( "main" ).style.display = "";
+          }
+          showingPrintable = !showingPrintable;
+        }
+      }, false);
+    }
+    
+    window.addEventListener( "resize", function ( e ) {
+      resizeTranscript();
+    } );
+    
+    window.addEventListener( "load", function ( e ) {
+      resizeTranscript();
+    } );
+    
+    $(document).bind('deck.change', function(event, from, to) {
+      
+      
+      var container = $( ".deck-container" )[ 0 ],
+          slide = slideData[ 0 ].element,
+          parentSlides = $( slide ).parents( ".slide" );
+      
+      // Size should be based on height of the current master slide, not sub-slide.
+      if (parentSlides.length) {
+        slide = parentSlides[ parentSlides.length - 1 ];
+      }
 
-	$.deck(".slide");
-  $.deck("enableScale");
-
-  var showingPrintable = false,
-      alreadyCalled = false;
-	
-  var resize = function() {
+      if( slide.offsetHeight > container.offsetHeight) {
+        container.style.overflowY = "auto";
+      } else {
+        container.style.overflow = "hidden";
+      }
+      
+      // The slide with the lower index gets priority -- specific isn't important but consistency is.
+      
+      // if ( popcorn.currentTime() < slideData[ to ].start || popcorn.currentTime() > slideData[ to ].end )
+      
+      var toSlide = slideData[ to ],
+          fromSlide = slideData[ from ],
+          currentTime = popcorn.currentTime();
+      
+      if( popcorn.currentTime() < slideData[ to ].start || popcorn.currentTime() > slideData[ to ].end ) {
+        popcorn.currentTime( slideData[ to ].start );
+      }
+    });
+    
+  }
+  
+  // Iterates through all slides and adds a random "id" attribute to any without one.
+  function initSlideIds () {
+    var slideElements = $( ".slide" ),
+        i,
+        currentId;
+    
+    for ( var i = 0; i < slideElements.length; i++ ) {
+      if ( !(slideElements[ i ].getAttribute( "id" )) ) {
+        slideElements[ i ].setAttribute( "id", 
+          slideElements[ i ].textContent.replace(/[^a-z0-9]/gi, '').substring(0, 8).toLowerCase() + "-"
+          + (Math.random() * (1 << 30) | 0).toString(36));
+      }
+    }
+  }
+  
+  // Returns an array with { element, transcript, start, end, id } for each slide in the document.
+  function parseSides ( slideElements ) {
+    var slides = [],
+        currentSlide,
+        previousSlide = {};
+  
+    // Note the lack of sanity checking.
+    
+    for ( var i = 0; i < slideElements.length; i++ ) {
+      currentSlide = {
+        start: (i > 0) ? +slideElements[ i ].getAttribute( "popcorn-slideshow" ) : 0,
+        element: slideElements[ i ],
+        id: slideElements[ i ].getAttribute( "id" )
+      };
+      
+      var transcriptElement = $( ".transcript", slideElements[ i ] )[0];
+      if (transcriptElement.innerHTML != null) {
+        currentSlide.transcriptSource = transcriptElement.innerHTML;
+      } else {
+        // If transcript is in a non-HTML (SVG) node, we interpret its textContent as HTML.
+        currentSlide.transcriptSource = transcriptElement.textContent;
+      }
+      
+      slides.push( currentSlide );
+      previousSlide.end = currentSlide.start;
+      previousSlide = currentSlide;
+    }
+    
+    previousSlide.end = popcorn.duration();
+    if ( previousSlide.end < previousSlide.start ) {
+      console.warn( "Total slide duration exceeds audio duration." );
+      previousSlide.end = previousSlide.start + 5;
+    }
+    
+    return slides;
+  }
+  
+  function resizeTranscript () {
     var elem = document.getElementById( "slideshow-transcript" );
     elem.style.height = (document.body.offsetHeight - elem.offsetTop - 3)   + "px";
     elem.style.maxWidth = (document.body.offsetWidth)+ "px";
-  };
-
-  var openPrint = function() {
-    alreadyCalled = true;
+  }
+  
+  function initPrintable () {
     var body = document.getElementById( "printable" ),
         bodyChildren = document.body.children[ 0 ].getElementsByTagName( "section" );
 
@@ -55,7 +284,6 @@ $(function() {
             slides = slide.children[ 0 ].querySelectorAll(".slide"),
             innerTrans = "";
 
-        console.log( slides.length );
         if( slides.length > 0 ) {
           for( var j = 0, k = slides.length; j < k; j++ ) {
             slides[ j ].className = "slide deck-current";
@@ -85,47 +313,76 @@ $(function() {
         resize();
       })( slide, transcript );
     }
-  };
+    
+    return document.getElementById("printable");
+  }
 
-  document.addEventListener( "keydown", function( e ) {
-    if( e.keyCode === 80 ) {
-      var elem = document.getElementById( "audio" );
-      !elem.paused ? elem.pause() : elem.play();
-    } else if( e.keyCode === 84 ) {
-      if( !alreadyCalled ) {
-        openPrint();
+  function initTimelineTargets () {
+
+      var container,
+          innerContainer = document.createElement( "span" ),
+          userAgent = navigator.userAgent.split( " " ),
+          trackEvents = [],
+          prevTime = 0,
+          count = 0,
+          pixelsPerSecond,
+          containerWidth,
+          popcorn = Popcorn( "#audio", { frameAnimation: true }),
+          flag = false,
+          eventDiv = document.getElementById( "events" );
+      
+      function createElement( times ) {
+        var teDiv = document.createElement( "span" ),
+            spacer = document.createElement( "span" ),
+            endTime = ( times + 1 ) > slideData.length - 1 ? +slideData[ times ].start: slideData[ times + 1 ].start,
+            recurse = false;
+
+
+        if( innerContainer.children.length === 0 ) {
+          innerContainer.appendChild( teDiv );
+          innerContainer.appendChild( spacer );
+          teDiv.style.width = ( pixelsPerSecond * +slideData[ times ].start ) / ( container.offsetWidth / 100 ) + "%";
+          teDiv.id = "popcorn-slideshow-div-startPadding";
+          recurse = true;
+        } else {
+          innerContainer.appendChild( teDiv );
+          innerContainer.appendChild( spacer );
+          // such a gross block of code, must fix this
+          if( userAgent[ userAgent.length - 1 ].split( "/" )[ 0 ] === "Firefox" ) {
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - +slideData[ times ].start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
+          } else {
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - +slideData[ times ].start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
+          }
+          teDiv.id = "popcorn-slideshow-div-" + count;
+        }
+
+        teDiv.innerHTML = "<p><b></b></p>";
+        teDiv.className = "popcorn-slideshow";
+
+        spacer.className = "spacer";
+
+       recurse && createElement( times );
       }
-      if( !showingPrintable ) {
-        document.getElementById( "printable" ).style.display = "";
-        document.getElementById( "main" ).style.display = "none";
-      } else {
-        document.getElementById( "printable" ).style.display = "none";
-        document.getElementById( "main" ).style.display = "";
+      
+      container = $( ".mejs-time-total" )[ 0 ];
+      containerWidth = container.offsetWidth;
+      pixelsPerSecond = containerWidth / popcorn.duration();
+
+      for( var i = 0, l = slideData.length; i < l; i++ ) {
+        createElement(i)
       }
-      showingPrintable = !showingPrintable;
-    }
-  }, false);
-  $(document).bind('deck.change', function(event, from, to) {
-    var container = $( ".deck-container" )[ 0 ],
-        slide = $.deck( "getSlide", to )[ 0 ],
-        parentSlides = $( slide ).parents( ".slide" );
-    
-    // Size should be based on height of the current master slide, not sub-slide.
-    if (parentSlides.length) {
-      slide = parentSlides[ parentSlides.length - 1 ];
-    }
-    
-    if( slide.offsetHeight > container.offsetHeight) {
-      container.style.overflowY = "auto";
-    } else {
-      container.style.overflow = "hidden";
-    }
-  });
-  window.addEventListener( "resize", function( e ) {
-    resize();
-  }, false);
-  window.addEventListener( "load", function( e ) {
-    resize();
-  }, false );
+
+      container.insertBefore( innerContainer, container.children[ 1 ] );
+      container.removeChild( container.children[ 0 ] );
+      innerContainer.className += " innerContainer";
+
+      var div = document.createElement( "span" );
+      innerContainer.appendChild( div );
+
+      div.style.width = ( ( container.getBoundingClientRect().right - innerContainer.children[ innerContainer.children.length - 2 ].getBoundingClientRect().right ) / container.offsetWidth ) * 100 + "%";
+      div.id = "popcorn-slideshow-div-endPadding";
+      div.innerHTML = "<p><b></b></p>";
+      div.className = "popcorn-slideshow";
+
+  }
 });
-
