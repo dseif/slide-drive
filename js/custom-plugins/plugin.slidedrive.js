@@ -1,13 +1,13 @@
 (function ( Popcorn ) {
 
-  Popcorn.plugin( "deckjs" , {
+  Popcorn.plugin( "slidedrive" , {
       manifest: {
         about: {
-          name: "Popcorn deckjs plugin",
+          name: "Slide Drive plugin",
           author: "David Seifried",
           website: "http://dseifried.wordpress.com/"
         },
-        options:{
+        options: {
           start: {
             elem: "input",
             type: "number",
@@ -18,29 +18,26 @@
             type: "number",
             label: "Out"
           },
-          slide: {
+          slideId: {
             elem: "input",
             type: "text",
-            label: "Slide"
+            label: "Slide (id)"
+          },
+          transcriptSource: {
+            elem: "input",
+            type: "text",
+            label: "Transcript (HTML)"
           },
           target: "deckjs-container",
         }
       },
       _setup: function( options ) {
+        
       }, 
       start: function( event, options ) {
-        $.deck( "go", +options.slide );
+        $.deck( "go", options.slideId );
 
-        var transcriptSource = $( ".transcript" )[ +options.slide ];
-
-        if ( transcriptSource.innerHTML != null ) {
-          document.getElementById( "slideshow-transcript" ).innerHTML = transcriptSource.innerHTML;
-        } else {
-          // It's a non-HTML node. We'll treat its textContent *AS HTML*.
-          // For example, <text x="0" y="0" class="transcript"><![CDATA[<b>This</b> is a transcript!]]></text>
-          document.getElementById( "slideshow-transcript" ).innerHTML = transcriptSource.textContent;
-        }
-
+        document.getElementById( "slideshow-transcript" ).innerHTML = options.transcriptSource;
         document.getElementById( "slideshow-transcript" ).style.padding = "5px 5px 5px 5px";
       },
       end: function( event, options ) {

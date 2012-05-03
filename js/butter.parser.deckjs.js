@@ -89,16 +89,28 @@ document.addEventListener( "DOMContentLoaded", function ( event ) {
         for( var i = 0, l = trackEvents.length; i < l; i++ ) {
           createElement( i );
           var end = ( i + 1 ) > trackEvents.length - 1 ? popcorn.duration() + 1 : +trackEvents[ i + 1 ],
-              options = {
-                start: trackEvents[ i ],
-                end: end,
-                slide: count,
-                target: "popcorn-slideshow-div-" + count
-              };
+            transcriptElement = $( ".transcript" )[ i ],
+            transcriptSource,
+            options;
+
+          if ( transcriptElement.innerHTML != null ) {
+            transcriptSource = transcriptElement.innerHTML;
+          } else {
+            transcriptSource = transcriptElement.textContent;
+          }
+          
+          options = {
+            start: trackEvents[ i ],
+            end: end,
+            slide: count,
+            target: "popcorn-slideshow-div-" + count,
+            transcriptSource: transcriptSource,
+            slideId: slides[ i ].id
+          };
         
           if ( butterTrack ) {
             butterTrack.addTrackEvent({
-              type: "deckjs",
+              type: "slidedrive",
               popcornOptions: options
             });
           } // else Butter should have exported these events into the document already
