@@ -118,16 +118,24 @@ jQuery(function ($) {
   // Oh, and Popcorn responses to Deck card changes, too!
   function initEvents () {
     if ( inButter ) {
-      console.log( "Disabling Deck.js keyboard shortcuts." );
+      console.log( "Deactivating Deck.js keyboard shortcuts." );
+      // You can define new key bindings, but removing existing ones doesn't seem to work.
+      // Instead we'll explicitly unbind any listeners on document for keydown.deck*.
       
-      var keyOptions = $.deck( "getOptions" ).keys;
-      for ( var command in keyOptions ) {
-        if ( keyOptions[ command ] && keyOptions[ command ].length ) {
-          keyOptions[ command ] = [];
+      var events = $( document ).data( "events" ).keydown,
+          toRemove = [];
+      
+      for ( var i = 0; i < events.length; i++ ) {
+        if ( /^deck/.test( events[i].namespace ) ) {
+          toRemove.push( events[i].type + "." + events[i].namespace )
         }
       }
+            
+      for ( var i = 0; i < toRemove.length; i++ ) {
+        $( document ).off( toRemove[ i ] );
+      }
     } else {
-      console.log( "Enabling our keyboard shortcuts." );
+      console.log( "Activating our keyboard shortcuts." );
       
       document.addEventListener( "keydown", function( e ) {
         if ( e.keyCode === 80 ) {
@@ -221,11 +229,15 @@ jQuery(function ($) {
       };
       
       var transcriptElement = $( ".transcript", slideElements[ i ] )[0];
-      if (transcriptElement.innerHTML != null) {
-        currentSlide.transcriptSource = transcriptElement.innerHTML;
+      if ( transcriptElement ) {
+        if ( transcriptElement.innerHTML != null ) {
+          currentSlide.transcriptSource = transcriptElement.innerHTML;
+        } else {
+          // If transcript is in a non-HTML (SVG) node, we interpret its textContent as HTML.
+          currentSlide.transcriptSource = transcriptElement.textContent;
+        }
       } else {
-        // If transcript is in a non-HTML (SVG) node, we interpret its textContent as HTML.
-        currentSlide.transcriptSource = transcriptElement.textContent;
+        currentSlide.transcriptSource = "";
       }
       
       slides.push( currentSlide );

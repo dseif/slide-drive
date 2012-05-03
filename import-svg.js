@@ -105,6 +105,8 @@ jQuery( function ( $ ) {
       $( this ).attr( "font-family", $( this ).attr( "font-family" ).replace(/ embedded/g, "") );
     } );
     
+    $( ".Slide", root ).removeClass("Slide").addClass("libreoffice-slide");
+    
     var form = $( "<form />" ).append(
       $( "<section />" ).append(
         $( "<h2 />" ).text( "Audio Sources" ),
