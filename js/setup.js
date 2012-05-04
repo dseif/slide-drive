@@ -97,8 +97,12 @@ jQuery(function ($) {
   function initAfterMediaReady () {
     console.log( "Media ready, continuing initialization." );
     
-    $( ".mejs-container" ).attr( "data-butter-exclude", true );
-    $( ".mejs-container audio" ).attr( "data-butter-include", true );
+    if ( inButter ) {
+      butter.page.listen( "getHTML", function ( e ) {
+        var root = e.data;
+        $( ".mejs-container", root ).replaceWith( $( ".mejs-container audio", root ) );
+      });
+    }
     
     // If this is an exported Butter presentation we don't read the DOM (because it's not updated properly )
     if ( fromButter ) {
@@ -198,7 +202,7 @@ jQuery(function ($) {
       // How do I do that?
       // Set a global in the plugin which is cleared by a handler that runs *after* this one.
       // Err... or, since we can be sure that this will run, we can clear it here.
-      // That really obscures the plugin/setup division, though.
+      // Except we can't be sure because going to the current slide is a noop.
       
       var container = $( ".deck-container" )[ 0 ],
           slide = slideData[ 0 ].element,
