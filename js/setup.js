@@ -59,7 +59,13 @@ jQuery(function ($) {
   function initMediaAndWait () {
     console.log( "Initializing media player and waiting for it to be ready." );
     
-    popcorn = Popcorn( "#audio", { frameAnimation: true });
+    if ( fromButter ) {
+      popcorn = Popcorn.instances[0];
+    } else {
+      popcorn = Popcorn( "#audio", { frameAnimation: true });
+    }
+    
+    window.popcorn = popcorn; // TODO remove this after debugging
     
     var pollUntilReady;
     
@@ -91,7 +97,21 @@ jQuery(function ($) {
   function initAfterMediaReady () {
     console.log( "Media ready, continuing initialization." );
     
-    $.deck( ".slide" );
+    $( ".mejs-container" ).attr( "data-butter-exclude", true );
+    $( ".mejs-container audio" ).attr( "data-butter-include", true );
+    
+    // If this is an exported Butter presentation we don't read the DOM (because it's not updated properly )
+    if ( fromButter ) {
+      var slideIds = popcorn.getTrackEvents()
+        .filter(function (e) { return e._natives.type === "slidedrive"; })
+        .map(function (e) { return "#" + e.slideId; });
+      slideIds.sort(function( a, b ) {
+        return a.start - b.start;
+      });
+      $.deck( slideIds );
+    } else {
+      $.deck( ".slide" );
+    }
     
     slideData = parseSides( $.deck( "getSlides" ).map( function (x) { return x[0]; } ) );
     
@@ -179,13 +199,6 @@ jQuery(function ($) {
       // Set a global in the plugin which is cleared by a handler that runs *after* this one.
       // Err... or, since we can be sure that this will run, we can clear it here.
       // That really obscures the plugin/setup division, though.
-      
-      console.log("DECK IS CHANGING, FROM BUTTER? " + !!$.deck.__goingFromButter);
-      
-      if ($.deck.__goingFromButter) {
-        delete $.deck.__goingFromButter;
-        return;
-      }
       
       var container = $( ".deck-container" )[ 0 ],
           slide = slideData[ 0 ].element,
@@ -358,7 +371,6 @@ jQuery(function ($) {
           count = 0,
           pixelsPerSecond,
           containerWidth,
-          popcorn = Popcorn( "#audio", { frameAnimation: true }),
           flag = false,
           eventDiv = document.getElementById( "events" );
       

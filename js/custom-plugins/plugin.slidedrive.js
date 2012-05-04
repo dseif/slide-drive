@@ -35,7 +35,6 @@
         
       }, 
       start: function( event, options ) {
-        $.deck.__goingFromButter = true; // TODO anything less hacky than this. oh, and if we don't actually go this won't be cleared.
         $.deck( "go", options.slideId );
 
         document.getElementById( "slideshow-transcript" ).innerHTML = options.transcriptSource;
