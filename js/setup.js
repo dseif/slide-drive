@@ -166,7 +166,18 @@ jQuery(function ($) {
     } );
     
     $(document).bind('deck.change', function(event, from, to) {
+      // TODO Detect if this move is in response to a Popcorn trigger or risk infinite loopage.
+      // How do I do that?
+      // Set a global in the plugin which is cleared by a handler that runs *after* this one.
+      // Err... or, since we can be sure that this will run, we can clear it here.
+      // That really obscures the plugin/setup division, though.
       
+      console.log("DECK IS CHANGING, FROM BUTTER? " + !!$.deck.__goingFromButter);
+      
+      if ($.deck.__goingFromButter) {
+        delete $.deck.__goingFromButter;
+        return;
+      }
       
       var container = $( ".deck-container" )[ 0 ],
           slide = slideData[ 0 ].element,
