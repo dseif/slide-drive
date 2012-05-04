@@ -59,21 +59,28 @@ jQuery(function ($) {
   function initMediaAndWait () {
     console.log( "Initializing media player and waiting for it to be ready." );
     
-    popcorn = Popcorn( "#audio", { frameAnimation: true });;
+    popcorn = Popcorn( "#audio", { frameAnimation: true });
     
     var pollUntilReady;
     
     $("audio").mediaelementplayer({
       success: pollUntilReady = function () {
+        console.log( "MediaElement ready, waiting for popcorn.readyState() >= 2 (currently " + popcorn.readyState() + ")" );
+        
         if ( popcorn.readyState() >= 2 ) {
+          console.log("ready...");
+          
           if ( !inButter ) {
-            initAfterMediaReady()
+            initAfterMediaReady();
           } else {
+            console.log( "butter.readyState() is ready, waiting for butter.media[ 0 ].onReady()." );
+            
             butter.media[ 0 ].onReady(function () { 
               initAfterMediaReady();
             });
           }
         } else {
+          console.log("waiting...");
           setTimeout( pollUntilReady, 250 );
         }
       }
@@ -85,10 +92,11 @@ jQuery(function ($) {
     console.log( "Media ready, continuing initialization." );
     
     $.deck( ".slide" );
+    
+    slideData = parseSides( $.deck( "getSlides" ).map( function (x) { return x[0]; } ) );
+    
     // Parse slide data into live Popcorn events or Butter timeline events.
     if ( !fromButter ) {
-      slideData = parseSides( $.deck( "getSlides" ).map( function (x) { return x[0]; } ) );
-      
       var butterTrack,
           addEvent = inButter ? function ( options ) { butterTrack.addTrackEvent({ type: "slidedrive", popcornOptions: options }); }
                               : function ( options ) { popcorn.slidedrive( options ); }
