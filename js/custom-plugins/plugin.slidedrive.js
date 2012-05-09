@@ -24,7 +24,7 @@
             label: "Slide (id)"
           },
           transcriptSource: {
-            elem: "input",
+            elem: "textarea",
             type: "text",
             label: "Transcript (HTML)"
           },

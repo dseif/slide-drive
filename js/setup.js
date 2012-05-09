@@ -6,31 +6,14 @@ jQuery(function ($) {
       - Non-butter keyboard shortcuts disabled
       - Semantic interpretation targets Butter timeline
     - from Butter
-      - Semantic interpretation disabled
-    
-    
-    - Define unique ids for every slide.
-    
-    - Wait for Butter
-    - Initialize player
-    - Wait for playerReady and readyState
-    
-    - Have our own way to generate unique identifiers, rather than relying on Deck's sequential ones.
-      - .text().strip().slice(20) +  + .slice(-10)
-    
-    - Parse
-    - Initialize Deck.js
-    
-    - We need persistent identifiers for slides. Relying on Deck.js' is bad, because they aren't
-      available until it's manipulated the DOM into a bad state. Make our own:
-        
+      - Semantic interpretation disabled    
   */
   
   var printableElement = null,
       showingPrintable = false,
       inButter         = !!window.Butter,
       butter           = null,
-      fromButter       = !inButter && $( "meta[name=generator][content^='Mozilla Butter']" ).length > 0,
+      fromButter       = !inButter && $( "body" ).hasClass( "slide-drive-butter" ),
       popcorn          = null,
       slideData        = null;
   
@@ -40,6 +23,12 @@ jQuery(function ($) {
     console.log( "Starting Slide Drive initialization." );
     
     initSlideIds();
+    
+    if ( fromButter ) {
+      // Butter adds <base> tag to our document to make sure the resouce paths are correct,
+      // that it will break our anchor links and have nasty side-effects.
+      $( "base" ).first().remove();
+    }
     
     if ( inButter ) {
       Butter({
