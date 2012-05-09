@@ -155,10 +155,27 @@ jQuery( function ( $ ) {
     return fontNames.join( "," );
   }
   
+  function stripWhitespaceNodes ( el ) {
+    if ( el.nodeType === 3 ) {
+      if ( /^\s*$/.test( el.textContent) ) {
+        el.parentNode.removeChild( el )
+      }
+    } else {
+      for ( var i = 0; i < el.childNodes.length; ++i ) {
+        stripWhitespaceNodes( el.childNodes[ i ] );
+      }
+    }
+  }
+  
   /* Given the root of a loaded SVG element, proccess it and split into elements for each slide.
      Calls addSlide on each processed slide.
   */
   function handleDroppedSVG ( root ) {
+    // Remove whitespace text nodes between <text> nodes.
+    
+    var textGroups = $.unique( $( "text", root ).map(function() { return $(this).closest("g")[0]; }).get() );
+    textGroups.map(stripWhitespaceNodes);
+    
     // Embedded fonts? Detach before cloning, then re-add to the first slide.
     
     var i, l, f, d;
