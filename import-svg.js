@@ -85,7 +85,7 @@ jQuery( function ( $ ) {
         return;
       }
       
-      var svgRoot = $( "<div>" ).html( reader.result ).children( "svg" );
+      var svgRoot = $( "<div>" ).html( reader.result ).children( "svg" )[ 0 ];
       
       predropMessage.remove();
       
@@ -95,17 +95,93 @@ jQuery( function ( $ ) {
     return false;
   }
   
+  // Maps of lowercase known font names to list of fallback fnts.
+  // The system copy will have top priority, followed by the embedded version, then the fallbacks.
+  
+  var knownFonts = {
+    // We expect "safer" fonts or metrics-maching fallbacks to be present on ~90%+ of systems.
+    safer: { 
+      "arial": [ "Liberation Sans", "Helvetica", "Arimo", "sans-serif" ],
+      "helvetica": [ "Liberation Sans", "Arial", "Arimo", "sans-serif" ],
+      "liberation sans": [ "Helvetica", "Arial", "Arimo", "sans-serif" ],
+      "arimo": [ "Liberation Sans", "Helvetica", "Arial", "sans-serif" ],
+
+      "times new roman": [ "Liberation Serif", "Times", "Tinos", "serif" ],
+      "times": [ "Times New Roman", "Liberation Serif", "Tinos", "serif" ],
+      "liberation serif": [ "Times New Roman", "Times", "Tinos", "serif" ],
+      "tinos": [ "Liberation Serif", "Times New Roman", "Times", "serif" ],
+
+      "courier new": [ "Liberation Mono", "Cousine", "monospace" ],
+      "liberation mono": [ "Courier New", "Cousine", "monospace" ],
+      "cousine": [ "Liberation Mono", "Courier New", "monospace" ],
+    
+      "arial black": [ "sans-serif" ],
+    
+      "georgia": [ "serif" ],
+    
+      "impact": [ "sans-serif" ]
+    },
+    
+    unsafe: {
+      "arial narrow": [ "Liberation Sans Narrow", "sans-serif" ],
+      "liberation sans narrow": [ "arial narrow", "sans-serif" ],
+
+      "menlo": [ "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "monospace" ],
+      "dejavu sans mono": [ "Bitstream Vera Sans Mono", "menlo", "monospace" ],
+      "bitstream vera sans mono": [ "DejaVu Sans Mono", "menlo", "monospace" ],
+
+      "courier": [ "monospace" ],
+
+      "consolas": [ "monospace" ],
+      
+      "monaco": [ "monospace" ],
+      
+      "lucida console": [ "monospace" ]
+    }
+  };
+  
+  function makeFontStack( fontName ) {
+    fontName = fontName.replace( / embedded$/, '' );
+    
+    var fontKey = fontName.toLowerCase(),
+        fontNames = [ fontName, fontName + " embedded" ];
+    
+    if ( fontKey in knownFonts.safer ) {
+      fontNames.push.apply( fontNames, knownFonts.safer[ fontKey ] );
+    } else if ( fontKey in knownFonts.unsafe ) {
+      fontNames.push.apply( fontNames, knownFonts.unsafe[ fontKey ] );
+    }
+    
+    return fontNames.join( "," );
+  }
+  
   /* Given the root of a loaded SVG element, proccess it and split into elements for each slide.
      Calls addSlide on each processed slide.
   */
   function handleDroppedSVG ( root ) {
-    // remove all embedded fonts and references thereto
-    $( "font, font-face, missing-glyph", root ).remove();
-    $( "[font-family*=\" embedded\"]", root ).each( function () {
-      $( this ).attr( "font-family", $( this ).attr( "font-family" ).replace(/ embedded/g, "") );
-    } );
+    // Embedded fonts? Detach before cloning, then re-add to the first slide.
     
-    $( ".Slide", root ).removeClass("Slide").addClass("libreoffice-slide");
+    var i, l, f, d;
+    
+    var fontUsage = {},
+        fontUsers = $( "[font-family]", root );
+    
+    for ( i = 0, l = fontUsers.length; i < l; ++i ) {
+      var element = fontUsers[ i ],
+          fontFamily = element.getAttribute( "font-family" );
+      
+      fontFamily = fontFamily.replace( / embedded$/, '' ).toLowerCase();
+      
+      if ( !(fontFamily in fontUsage) ) {
+        fontUsage[ fontFamily ] = [ element ];
+      } else {
+        fontUsage[ fontFamily ].push( element );
+      }
+      
+      element.setAttribute( "font-family", makeFontStack( fontFamily ) );
+    }
+    
+    $( ".Slide", root ).removeClass( "Slide" ).addClass( "libreoffice-slide" );
     
     var form = $( "<form />" ).append(
       $( "<section />" ).append(
@@ -114,12 +190,36 @@ jQuery( function ( $ ) {
       )
     );
     
+    var fontList, fontReport = $( "<section />" ).append(
+      $("<h2>Fonts Used</h2>"),
+      fontList = $("<ul />")
+    ).appendTo( form );
+    
+    for ( name in fontUsage ) {
+      var status;
+      if ( name in knownFonts.safer ) {
+        status = "Safe";
+      } else if ( name in knownFonts.unsafe ) {
+        status = "Known";
+      } else {
+        status = "Unknown";
+      }
+      fontList.append( $( "<li />" ).text( name + " - " + status ) );
+    }
+    
     var slideIds = $( ".Slide", root ).map( function () {
       return $( this ).attr( "id" );
     } );
     
     slideIds.each( function ( index, id ) {
-      var slide = root.clone();
+      var slide = $( root ).clone();
+      
+      // We only want embedded fonts to be included in the first slide, because from there it will be
+      // usable from the others, so we remove them from the root after the first slide is cloned.
+      if ( index === 0 ) {
+        $( "font, font-face, missing-glyph", root ).remove();
+      }
+      
       $( ".Slide", slide ).each( function () {
         if ( $( this ).attr( "id" ) !== id ) {
           $( this ).remove();
@@ -159,18 +259,18 @@ jQuery( function ( $ ) {
   /* Reads this form's contents, generates the Side Drive presentation and redirects the user to it.
   */
   function produceConverted () {
-    var audioSources = $( "textarea[name=sources]"  ).val().split( /\n/g ),
+    var audioSources = $( "textarea[name=sources]" ).val().split( /\n/g ),
         slides = $( "section.slide", this ).map( function () {
           return {
             element: $( "svg", this )[0],
             transcriptSource: $( "textarea", this ).val(),
-            duration: +$( "input", this ).val(),
-          }
+            duration: +$( "input", this ).val()
+          };
         } ),
         doc = makeDocument( audioSources, slides ),
         source = documentToHTML( doc );
     
-    $( "body" ).empty().append( $("<textarea />").val(source).css({ width: "100%", height: "20em" }) );
+    $( "body" ).empty().append( $( "<textarea />" ).val(source).css({ width: "100%", height: "20em" }) );
     
     return false;
   }
