@@ -1,33 +1,18 @@
 jQuery( function ( $ ) {
   "use strict";
   
-  /* The template is loaded from this path on init. */
-  var templatePath = "template.html",
-      templateDoc,
-      predropMessage,
-      wrapper = $( "#wrapper" );
-  
   init();
 
   /*  Loads the template asynchronously, sets up drag-related event handlers
       and displays related messages to the user.
   */  
   function init () {
-    predropMessage = $( "<p>Loading...</p>" ).appendTo( wrapper );
-    
-    $.ajax( templatePath ).then( function ( templateSource ) {
-      templateDoc = documentFromHTML( templateSource );
-      
-      $( "html" ).on( {
-        "dragover.waiting": anticipateDrop,
-        "dragenter.waiting": anticipateDrop,
-        "drop.waiting": handleDrop,
-        "dragleave.waiting": unanticipateDrop,
-        "dragend.waiting": unanticipateDrop,
-      } );
-      predropMessage.text( "Drag and drop an SVG file into this window to cgvert it!" );
-    }, function () {
-      predropMessage.text( "Failed to GET template from: " ).append( $( "<code />" ).text( templatePath ) );
+    $( "html" ).on( {
+      "dragover.waiting": anticipateDrop,
+      "dragenter.waiting": anticipateDrop,
+      "drop.waiting": handleDrop,
+      "dragleave.waiting": unanticipateDrop,
+      "dragend.waiting": unanticipateDrop,
     } );
   }
 
@@ -38,14 +23,14 @@ jQuery( function ( $ ) {
     if ( event.stopPropagation ) event.stopPropagation();
     event.originalEvent.dataTransfer.dropEffect = "copy";
     event.originalEvent.dataTransfer.dropAllowed = "copy";
-    $( "html" ).addClass( "dropCandidate" );
+    $( "body" ).css( "opacity", 0.75 );
     return false;
   }
 
   /* Unhighlight target.
   */
   function unanticipateDrop ( event ) {
-    $( "html" ).removeClass( "dropCandidate" );
+    $( "body" ).css( "opacity", 1.0 );
     return false;
   }
   
@@ -59,7 +44,7 @@ jQuery( function ( $ ) {
     unanticipateDrop();
     
     if ( event.originalEvent.dataTransfer.files.length !== 1 ) {
-      predropMessage.text( "Please drop a single SVG file. You dropped " + event.originalEvent.dataTransfer.files.length + " files." );
+      console.log( "Please drop a single SVG file. You dropped " + event.originalEvent.dataTransfer.files.length + " files." );
       return false;
     }
     
@@ -67,17 +52,11 @@ jQuery( function ( $ ) {
         reader = new FileReader();
     
     if ( file.type != "image/svg+xml" ) {
-      predropMessage.text( "Please drop an SVG file; you dropped a " + file.type + " file." );
+      console.log( "Please drop an SVG file; you dropped a " + file.type + " file." );
       return false;
     }
     
-    // we're no longer waiting for an SVG; remove the associated events.
-    $( "html" ).off( ".waiting" );
-    
-    $( "<div />" ).append(
-    ).appendTo( wrapper );
-    
-    predropMessage.text( "Reading SVG..." );
+    console.log( "Reading SVG..." );
     
     reader.readAsText(file, "UTF-8" );
     reader.onloadend = function () {
@@ -86,8 +65,6 @@ jQuery( function ( $ ) {
       }
       
       var svgRoot = $( "<div>" ).html( reader.result ).children( "svg" )[ 0 ];
-      
-      predropMessage.remove();
       
       handleDroppedSVG(svgRoot);
     };
@@ -171,6 +148,8 @@ jQuery( function ( $ ) {
      Calls addSlide on each processed slide.
   */
   function handleDroppedSVG ( root ) {
+    console.log( "Read SVG from file." );
+    
     // Remove whitespace text nodes between <text> nodes.
     
     var textGroups = $.unique( $( "text", root ).map(function() { return $(this).closest("g")[0]; }).get() );
@@ -200,36 +179,26 @@ jQuery( function ( $ ) {
     
     $( ".Slide", root ).removeClass( "Slide" ).addClass( "libreoffice-slide" );
     
-    var form = $( "<form />" ).append(
-      $( "<section />" ).append(
-        $( "<h2 />" ).text( "Audio Sources" ),
-        $( "<textarea name=\"sources\" />" ).val( "media/pitch.ogg\nmedia/pitch.mp3" )
-      )
-    );
-    
-    var fontList, fontReport = $( "<section />" ).append(
-      $("<h2>Fonts Used</h2>"),
-      fontList = $("<ul />")
-    ).appendTo( form );
-    
-    for ( name in fontUsage ) {
+    // TODO - display this somewhere
+    for ( var name in fontUsage ) {
       var status;
       if ( name in knownFonts.safer ) {
         status = "Safe";
       } else if ( name in knownFonts.unsafe ) {
-        status = "Known";
+        status = "Known, Unsafe";
       } else {
-        status = "Unknown";
+        status = "Unknown, Unsafe";
       }
-      fontList.append( $( "<li />" ).text( name + " - " + status ) );
     }
     
-    var slideIds = $( ".Slide", root ).map( function () {
+    var slideIds = $( ".libreoffice-slide", root ).map( function () {
       return $( this ).attr( "id" );
     } );
     
-    slideIds.each( function ( index, id ) {
-      var slide = $( root ).clone();
+    var cumulativeDuration = +($( ".deck-container .slide" ).last().attr( "popcorn-slideshow" ) || 0) + 3;;
+    
+    slideIds.each(function ( index, id ) {
+      var slide = $( root ).clone()[ 0 ];
       
       // We only want embedded fonts to be included in the first slide, because from there it will be
       // usable from the others, so we remove them from the root after the first slide is cloned.
@@ -246,121 +215,46 @@ jQuery( function ( $ ) {
       } );
       $( "[visible=hidden] ", this ).remove()
       
-      addSlide( slide, form );
+      var container = document.querySelector( ".deck-container" );
+      
+      var slideEl = document.createElement( "section" ),
+          transEl = document.createElement( "div" );
+      
+      slideEl.setAttribute( "id", 
+        slideEl.textContent.replace(/[^a-z0-9]/gi, '').substring(0, 8).toLowerCase() + "-"
+        + (Math.random() * (1 << 30) | 0).toString(36));
+      
+      console.log("adding slide", slideEl.getAttribute( "id" ));
+      
+      slideEl.setAttribute( "class", "slide" );
+      slideEl.setAttribute( "popcorn-slideshow", cumulativeDuration );
+      
+      transEl.setAttribute( "class", "transcript" );
+      
+      slideEl.appendChild( transEl );
+      slideEl.appendChild( slide );
+      
+      container.appendChild( slideEl );
+      
+      butter.media[ 0 ].tracks[ 0 ].addTrackEvent({
+        type: "slidedrive",
+        popcornOptions: {
+          start: cumulativeDuration,
+          end: cumulativeDuration + 5,
+          transcriptSource: "",
+          slideId: slideEl.getAttribute( "id" )
+        }
+      });
+      
+      slideData.push({
+        start: cumulativeDuration,
+        end: cumulativeDuration + 5,
+        id: slideEl.getAttribute( "id" )
+      });
+      
+      cumulativeDuration += 5;
     });
     
-    form.append(
-      $( "<div class=\"buttonBumper\"><input type=\"submit\" value=\"Convert\" class=\"majorAction\" /></div>" )
-    );
-    
-    form.appendTo( wrapper );
-    form.on( "submit", produceConverted );
-  }
-  
-  /* Adds */
-  function addSlide ( root, form ) {
-    var pannel = $( "<section class='slide' />" );
-    pannel.append( root );
-    
-    pannel.append( "<h3>Transcript</h3>" );
-    pannel.append( $( "<textarea></textarea>" ));
-    
-    pannel.append( "<h3>Duration</h3>" );
-    pannel.append( $( "<input value=\"3\" /> seconds" ));
-    
-    pannel.append( $( "<br>" ).css( "clear", "both" ) );
-    pannel.appendTo( form );
-    
-  }
-
-  /* Reads this form's contents, generates the Side Drive presentation and redirects the user to it.
-  */
-  function produceConverted () {
-    var audioSources = $( "textarea[name=sources]" ).val().split( /\n/g ),
-        slides = $( "section.slide", this ).map( function () {
-          return {
-            element: $( "svg", this )[0],
-            transcriptSource: $( "textarea", this ).val(),
-            duration: +$( "input", this ).val()
-          };
-        } ),
-        doc = makeDocument( audioSources, slides ),
-        source = documentToHTML( doc );
-    
-    $( "body" ).empty().append( $( "<textarea />" ).val(source).css({ width: "100%", height: "20em" }) );
-    
-    return false;
-  }
-
-  /* Produces a Slide Drive document given an array of audio source paths and an
-     array of {duration, element, transcriptSource} */
-  function makeDocument ( audioSources, slides ) {
-    var doc = templateDoc; // we don't need more than one; this should really be cloned.
-    
-    // remove existing audio sources from template, add our own.
-    var audioElement = doc.querySelector("audio");
-    
-    for ( var i = 0; i < audioElement.childNodes.length; i++ ) {
-      audioElement.removeChild( audioElement.childNodes[ i ] );
-    }
-    
-    for ( var i = 0; i < audioSources.length; i++ ) {
-      var newSource = doc.createElement( "source" );
-      newSource.setAttribute( "src", audioSources[ i ] );
-      audioElement.appendChild( newSource );
-    }
-    
-    // clear the template of existing slides
-    var templateSlides = doc.querySelectorAll( ".slide" );
-    for ( var i = 0; i < templateSlides.length; i++ ) {
-      templateSlides[ i ].parentNode.removeChild( templateSlides[ i ] );
-    }
-    
-    var slideContainer = doc.querySelector( ".deck-container" ),
-        cumulativeDuration = 0;
-    for ( var i = 0; i < slides.length; i++ ) {
-      var newSlide = doc.createElement( "section" ),
-          newTranscript = doc.createElement( "div" );
-
-      newTranscript.innerHTML = slides[ i ].transcriptSource;
-      newTranscript.setAttribute( "class", "transcript" );
-
-      newSlide.setAttribute( "popcorn-slideshow", String(cumulativeDuration) );    
-      newSlide.setAttribute( "class", "slide" );
-      newSlide.appendChild( newTranscript )
-      newSlide.appendChild( slides[ i ].element );
-
-      cumulativeDuration += slides[ i ].duration;
-      slideContainer.appendChild( newSlide );
-    }
-    
-    return doc;
-  }
-  
-   /* Returns an HTML document of the given source code.
-  */
-  function documentFromHTML ( html ) {
-    var doc = document.implementation.createHTMLDocument( "" );
-    doc.documentElement.innerHTML = html;
-    return doc;
-  }
-  
-  /* Returns HTML source for the given document, using Modernizr's header.
-  */
-  function documentToHTML ( doc ) {
-    var parts = [
-      "<!DOCTYPE " + doc.doctype.name
-      + (doc.doctype.publicId ? ' PUBLIC "' + doc.doctype.publicId + '"' : '')
-      + (!doc.doctype.publicId && doc.doctype.systemId ? ' SYSTEM' : '') 
-      + (doc.doctype.systemId ? ' "' + doc.doctype.systemId + '"' : '')
-      + '>',
-      "<!--[if lt IE 7]> <html class=\"no-js ie6\" lang=\"en\"> <![endif]-->",
-      "<!--[if IE 7]>    <html class=\"no-js ie7\" lang=\"en\"> <![endif]-->",
-      "<!--[if IE 8]>    <html class=\"no-js ie8\" lang=\"en\"> <![endif]-->\n",
-      "<!--[if gt IE 8]><!-->  <html class=\"no-js\" lang=\"en\"> <!--<![endif]-->\n",
-       doc.documentElement.innerHTML,
-       "</html>"];
-    
-    return parts.join("\n");
+    $.deck( ".slide" ); //$.deck("getSlides").map(function(x){ return x[0];}).concat( slideIds.map(function(x){return document.getElementById(x)}) ) );  
   }
 } );

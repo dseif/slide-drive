@@ -35,6 +35,7 @@
         
       }, 
       start: function( event, options ) {
+        console.log("Going to slide " + options.slideId);
         $.deck( "go", options.slideId );
 
         document.getElementById( "slideshow-transcript" ).innerHTML = options.transcriptSource;

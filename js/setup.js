@@ -1,4 +1,6 @@
 jQuery(function ($) {
+  "use strict"
+  
   /*
     Three modes:
     - Standard
@@ -14,8 +16,9 @@ jQuery(function ($) {
       inButter         = !!window.Butter,
       butter           = null,
       fromButter       = !inButter && $( "body" ).hasClass( "slide-drive-butter" ),
-      popcorn          = null,
-      slideData        = null;
+      popcorn          = null;
+  
+  window.slideData = null;
   
   init();
   
@@ -106,7 +109,7 @@ jQuery(function ($) {
       $.deck( ".slide" );
     }
     
-    slideData = parseSides( $.deck( "getSlides" ).map( function (x) { return x[0]; } ) );
+    slideData = parseSlides( $.deck( "getSlides" ).map( function (x) { return x[0]; } ) );
     
     // Parse slide data into live Popcorn events or Butter timeline events.
     if ( !fromButter ) {
@@ -115,7 +118,7 @@ jQuery(function ($) {
                               : function ( options ) { popcorn.slidedrive( options ); }
       
       if ( inButter ) {
-        var butterTrack = butter.media[ 0 ].addTrack( "Slides" );
+        butterTrack = butter.media[ 0 ].addTrack( "Slides" );
       }
       
       for ( var i = 0; i < slideData.length; i++ ) {
@@ -239,7 +242,7 @@ jQuery(function ($) {
   }
   
   // Returns an array with { element, transcript, start, end, id } for each slide in the document.
-  function parseSides ( slideElements ) {
+  function parseSlides ( slideElements ) {
     var slides = [],
         currentSlide,
         previousSlide = {};
@@ -270,7 +273,8 @@ jQuery(function ($) {
       previousSlide = currentSlide;
     }
     
-    previousSlide.end = popcorn.duration();
+    // previousSlide.end = popcorn.duration();
+    
     if ( previousSlide.end < previousSlide.start ) {
       console.warn( "Total slide duration exceeds audio duration." );
       previousSlide.end = previousSlide.start + 5;
