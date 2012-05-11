@@ -195,7 +195,7 @@ jQuery( function ( $ ) {
       return $( this ).attr( "id" );
     } );
     
-    var cumulativeDuration = +($( ".deck-container .slide" ).last().attr( "popcorn-slideshow" ) || 0) + 3;;
+    var cumulativeDuration = +($( ".deck-container .slide" ).last().attr( "data-popcorn-slideshow" ) || 0) + 3;;
     
     slideIds.each(function ( index, id ) {
       var slide = $( root ).clone()[ 0 ];

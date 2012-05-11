@@ -251,7 +251,7 @@ jQuery(function ($) {
     
     for ( var i = 0; i < slideElements.length; i++ ) {
       currentSlide = {
-        start: (i > 0) ? +slideElements[ i ].getAttribute( "popcorn-slideshow" ) : 0,
+        start: (i > 0) ? +slideElements[ i ].getAttribute( "data-popcorn-slideshow" ) : 0,
         element: slideElements[ i ],
         id: slideElements[ i ].getAttribute( "id" )
       };
