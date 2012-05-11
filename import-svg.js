@@ -206,7 +206,7 @@ jQuery( function ( $ ) {
         $( "font, font-face, missing-glyph", root ).remove();
       }
       
-      $( ".Slide", slide ).each( function () {
+      $( ".libreoffice-slide", slide ).each( function () {
         if ( $( this ).attr( "id" ) !== id ) {
           $( this ).remove();
         } else {
