@@ -239,7 +239,12 @@ jQuery( function ( $ ) {
       butter.media[ 0 ].tracks[ 0 ].addTrackEvent({
         type: "slidedrive",
         popcornOptions: {
-          start: cumulativeDuration,
+          get start: function() { 
+            return +document.getElementById( this.slideId ).getAttribute( "data-popcorn-slideshow" );
+          },
+          set start: function( start ) {
+            document.getElementById( this.slideId ).setAttribute( "data-popcorn-slideshow", start );
+          },
           end: cumulativeDuration + 5,
           transcriptSource: "",
           slideId: slideEl.getAttribute( "id" )
@@ -255,6 +260,6 @@ jQuery( function ( $ ) {
       cumulativeDuration += 5;
     });
     
-    $.deck( ".slide" ); //$.deck("getSlides").map(function(x){ return x[0];}).concat( slideIds.map(function(x){return document.getElementById(x)}) ) );  
+    $.deck( ".slide" );
   }
 } );

@@ -22,6 +22,138 @@ jQuery(function ($) {
   
   init();
   
+  /*
+    Used as the Popcorn options object, and all kinds of other magic.
+    I'll describe it once I'm actually sure what I'm doing with it.
+  */
+  
+  // Now, this really need some tests.
+  
+  function SlideProxy ( elOrId ) {
+    var _el;
+    
+    if ( typeof elOrId === "string" ) {
+      _el = document.getElementById( elOrId );
+      
+      if (_el == null) {
+        throw new Error( "There is no element with ID " + elOrId );
+      }
+    } else {  
+      _el = elOrId;
+      
+      if ( !("nodeType" in _el) ) {
+        throw new Error( "SlideProxy argument must be a DOM node or ID thereof." );
+      }
+    }
+    
+    Object.defineProperties( this, {
+      start: {
+        enumerable: true,
+        get: function() {
+          return +_el.getAttribute( "data-popcorn-slideshow" );
+        },
+        set: function( start ) {
+          _el.setAttribute( "data-popcorn-slideshow", start );
+          
+          var successor = null,
+              parent = _el.parentNode,
+              siblings = (console.log(_el), parent.childNodes),
+              i, sib, sibStartAttr, sibStart;
+          
+          // Loop backwards through siblings to find the new new location for this element.
+          for ( i = siblings.length - 1; i >= 0; --i ) {
+            sib = siblings[ i ];
+            if ( !("getAttribute" in sib) ) {
+              continue; // not an element
+            }
+            
+            sibStartAttr = sib.getAttribute( "data-popcorn-slideshow" );
+            
+            if ( sibStartAttr != null ) {
+              sibStart = +sibStartAttr;
+              
+              if ( sibStart >= start ) {
+                successor = sib;
+              }
+            }
+          }
+          
+          if ( successor != _el ) {
+            parent.removeChild( _el );
+            
+            if ( successor == null ) {
+              parent.appendChild( _el );
+            } else {
+              parent.insertBefore( _el, successor );
+            }
+            
+            $.deck( ".slides" );
+          }
+        }
+      },
+      
+      slideId: {
+        enumerable: true,
+        get: function() {
+          var slideId = _el.getAttribute( "id" );
+          if ( slideId == null ) {
+            slideId = _el.textContent.replace( /[^a-z0-9]/gi, '' ).substring( 0, 8 )
+                        .toLowerCase() + "-" + ( Math.random() * (1 << 30) | 0 ).toString( 36 );
+            _el.setAttribute( "id", slideId );
+          }
+          return slideId;
+        },
+        set: function ( id ) { 
+          var el = document.getElementById( id );
+          if ( el == null ) {
+            throw new Error( "Attempted to set slideId to non-existent ID." );
+          }
+          _el = el;
+        }
+      },
+      
+      transcriptSource: {
+        enumerable: true,
+        get: function() {
+          var transcriptEl = _el.querySelector(".transcript");
+          
+          if ( transcriptEl == null ) {
+            return "";
+          } else {
+            if ( transcriptEl.innerHTML != null ) {
+              return transcriptEl.innerHTML;
+            } else {
+              return transcriptEl.innerText;
+            }
+          }
+        },
+        set: function ( transcriptSource ) {
+          var transcriptEl = _el.querySelector(".transcript");
+          
+          if ( transcriptEl == null ) {
+            if ( el.innerHTML != null ) {
+              transcriptEl = document.createElement( "div" );
+              transcriptEl.innerHTML = transcriptSource;
+            } else {
+              transcriptEl = document.createElement( "text" );
+              transcriptEl.innerText = transcriptSource;
+            }
+            transcriptEl.setAttribute( "class", "transcript" );
+            _el.insertBefore( transcriptEl, _el.firstChild );
+          } else {
+            if ( transcriptEl.innerHTML != null ) {
+              _el.innerHTML = transcriptSource;
+            } else {
+              _el.innerText = transcriptSource;
+            }
+          }
+        }
+      }
+    });
+    
+    this.end = this.start + 1;
+  }
+  
   function init () {
     console.log( "Starting Slide Drive initialization." );
     
@@ -93,43 +225,29 @@ jQuery(function ($) {
       butter.page.listen( "getHTML", function ( e ) {
         var root = e.data;
         $( ".mejs-container", root ).replaceWith( $( ".mejs-container audio", root ) );
+        
+        // We don't want Butter's copy of the popcorn events. They'll have been mirroed
+        // back into the DOM, which we'll parse them back out of.
+        // This will need a bit more nuance when other Popcorn events can be added.
+        $( "script", root ).last().remove();
       });
     }
     
-    // If this is an exported Butter presentation we don't read the DOM (because it's not updated properly )
-    if ( fromButter ) {
-      var slideIds = popcorn.getTrackEvents()
-        .filter(function (e) { return e._natives.type === "slidedrive"; })
-        .map(function (e) { return "#" + e.slideId; });
-      slideIds.sort(function( a, b ) {
-        return a.start - b.start;
-      });
-      $.deck( slideIds );
-    } else {
-      $.deck( ".slide" );
-    }
-    
-    slideData = parseSlides( $.deck( "getSlides" ).map( function (x) { return x[0]; } ) );
+    $.deck( ".slide" );
     
     // Parse slide data into live Popcorn events or Butter timeline events.
-    if ( !fromButter ) {
-      var butterTrack,
-          addEvent = inButter ? function ( options ) { butterTrack.addTrackEvent({ type: "slidedrive", popcornOptions: options }); }
-                              : function ( options ) { popcorn.slidedrive( options ); }
-      
-      if ( inButter ) {
-        butterTrack = butter.media[ 0 ].addTrack( "Slides" );
-      }
-      
-      for ( var i = 0; i < slideData.length; i++ ) {
-        addEvent({
-          start: slideData[ i ].start,
-          end: slideData[ i ].end,
-          transcriptSource: slideData[ i ].transcriptSource,
-          slideId: slideData[ i ].id
-          // no target?
-        });
-      }
+    var butterTrack,
+        addEvent = inButter ? function ( options ) { butterTrack.addTrackEvent({ type: "slidedrive", popcornOptions: options }); }
+                            : function ( options ) { popcorn.slidedrive( options ); }
+    
+    if ( inButter ) {
+      butterTrack = butter.media[ 0 ].addTrack( "Slides" );
+    }
+    
+    var slidesEls = document.querySelectorAll( ".slide" );
+    
+    for ( var i = 0; i < slidesEls.length; ++i ) {
+      addEvent( new SlideProxy( slidesEls[ i ] ) );
     }
     
     // $.deck.enableScale();
