@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Software Carpentry in 90 Seconds</title>
+
+    <!-- Core and extension CSS files -->
+  <link rel="stylesheet" href="external/deckjs/core/deck.core.css">
+  <link rel="stylesheet" href="external/deckjs/extensions/goto/deck.goto.css">
+  <link rel="stylesheet" href="external/deckjs/extensions/menu/deck.menu.css">
+  <link rel="stylesheet" href="external/deckjs/extensions/navigation/deck.navigation.css">
+  <link rel="stylesheet" href="external/deckjs/extensions/status/deck.status.css">
+  <link rel="stylesheet" href="external/deckjs/extensions/hash/deck.hash.css">
+	
+  <!-- Theme CSS files (menu swaps these out) -->
+  <link rel="stylesheet" href="external/deckjs/themes/style/swiss.css">
+	
+  <!-- Custom CSS just for this page -->
+  <link rel="stylesheet" href="css/slideshow.css">
+	
+  <script src="external/modernizr/modernizr.custom.js"></script>
+
+  <!-- Popcorn scripts -->
+  <script src="external/popcornjs/popcorn.js"></script>
+  <script src="external/popcornjs/plugin.deckjs.js"></script>
+  <script src="external/popcornjs/parser.deckjs.js"></script>
+  <!-- project-container class determines the size of the container.
+       This contains the slideshow, media element, and transcript
+       deck-container will override height set by deckjs to whatever you desire
+  -->
+  <style>
+    .project-container {
+      width: 100%;
+      height: 100%;
+      border-style:solid;
+      border-width: 1px;
+      border-color: black;
+    }
+    .deck-container {
+      height: 80%;
+    }
+  </style>
+</head>
+
+<body class="project-container">
+
+  <div class="deck-container">
+
+    <section class="slide" id="title-slide" popcorn-slideshow="1">
+      <div align="center">
+        <img src="images/software-carpentry-banner-with-hammer-380x80.png" alt="Software Carpentry logo" />
+        <h2>Software Carpentry in 90 Seconds</h2>
+        <h3>Greg Wilson</h3>
+        <h3>February 2012</h3>
+      </div>
+      <div class="transcript">
+	This screencast is a quick introduction to the <a href="http://software-carpentry.org">Software Carpentry</a> project.
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="4">
+      <h2>Mission</h2>
+      <p>Help scientists be more productive<br/>by teaching them basic computing skills</p>
+      <div class="transcript">
+	Our mission is to help scientists be more productive by teaching them basic computing skills.
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="9">
+      <h2>Problem</h2>
+      <p>
+	Scientists spend 40% or more of their time wrestling with software...
+      </p>
+
+      <div class="slide" popcorn-slideshow="14">
+        <p>But 95% or more are primarily self-taught</p>
+      </div>
+
+      <div class="slide" popcorn-slideshow="17">
+	<p>So they spend hours doing things that should take minutes...</p>
+      </div>
+
+      <div class="slide" popcorn-slideshow="20">
+	<p>...reinvent a lot of wheels...</p>
+      </div>
+
+      <div class="slide" popcorn-slideshow="22">
+	<p>...and still don't know if their results are reliable or not</p>
+      </div>
+
+      <div class="transcript">
+        <p>
+	  The problem we're trying to solve is that scientists often spend 40% or more of their time wrestling with software,
+	  but 95% or more of them are primarily self-taught.
+	  So they spend hours doing things that should take minutes,
+	  reinvent a lot of wheels,
+	  and still don't know if their results are reliable or not.
+        </p>
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="24">
+      <h2>Solution</h2>
+      <p>Short intensive workshops</p>
+      <div class="slide" popcorn-slideshow="27">
+        <p>Plus self-paced online instruction</p>
+      </div>
+      <div class="transcript">
+        <p>
+	  Our solution combines short, intensive workshops with self-paced online instruction.
+        </p>
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="30">
+      <h2>Benefits</h2>
+      <p>More confidence in results</p>
+      <div class="slide" popcorn-slideshow="33">
+        <p>Plus <em>higher productivity</em></p>
+      </div>
+      <ul>
+        <li class="slide" popcorn-slideshow="34">
+          A day a week is common
+        </li>
+        <li class="slide" popcorn-slideshow="35">
+          10X isn't rare
+        </li>
+      </ul>
+      <div class="transcript">
+        <p>
+	  The benefits to the scientist are more confidence in their results, and higher productivity:
+	  A day a week is common, and a ten-fold improvement isn't rare.
+        </p>
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="38">
+      <h2>Workshops</h2>
+      <p>Core skills needed to be productive in a small research team</p>
+      <div class="transcript">
+	The workshops cover the core skills needed to be productive in a small research team:
+      </div>
+      <table>
+        <tr>
+          <td>
+            <ul>
+	      <li class="slide" popcorn-slideshow="42">Basic programming
+                <div class="transcript">
+	          Basic programming...
+                </div>
+              </li>
+              <li class="slide" popcorn-slideshow="43">Version control
+                <div class="transcript">
+	          ...version control...
+                </div>
+              </li>
+              <li class="slide" popcorn-slideshow="44">Testing
+                <div class="transcript">
+	          ...testing...
+                </div>
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+	      <li class="slide" popcorn-slideshow="45">Using the shell
+                <div class="transcript">
+	          ...using the shell...
+                </div>
+              </li>
+	      <li class="slide" popcorn-slideshow="46">Relational databases
+                <div class="transcript">
+	          ...relational databases...
+                </div>
+              </li>
+              <li class="slide" popcorn-slideshow="48">Matrix programming
+                <div class="transcript">
+	          ...and matrix programming.
+                </div>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="slide" popcorn-slideshow="49">
+      <h2>Online</h2>
+      <p>More depth on core topics</p>
+      <div class="transcript">
+	The self-paced learning goes into more depth on these core topics...
+      </div>
+      <div class="slide" popcorn-slideshow="52">
+        <p>Plus:</p>
+        <div class="transcript">
+	  ...and looks at...
+        </div>
+      </div>
+      <table>
+        <tr>
+          <td>
+            <ul>
+	      <li class="slide" popcorn-slideshow="53">Program design
+                <div class="transcript">
+	          ...program design...
+                </div>
+              </li>
+              <li class="slide" popcorn-slideshow="54">Spreadsheets
+                <div class="transcript">
+	          ...spreadsheets...
+                </div>
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li class="slide" popcorn-slideshow="55">Data management
+                <div class="transcript">
+	          ...data management...
+                </div>
+              </li>
+              <li class="slide" popcorn-slideshow="56">Software lifecycles
+                <div class="transcript">
+	          ...and software lifecycles.
+                </div>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="slide" popcorn-slideshow="58">
+      <h2>Licensing</h2>
+      <p>All content is available online</p>
+      <div class="transcript">
+	All our content is available online...
+      </div>
+      <div class="slide" popcorn-slideshow="61">
+        <p>Creative Commons license</p>
+        <div class="transcript">
+	  ...under a Creative Commons license...
+        </div>
+      </div>
+      <div class="slide" popcorn-slideshow="62">
+        <p>Re-use and re-mix freely</p>
+        <div class="transcript">
+	  ...so you can re-use and re-mix it freely.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="65">
+      <h2>Support</h2>
+      <table>
+        <tr>
+          <td>
+            <img src="images/sloan.png" alt="Sloan Foundation" />
+            <div class="transcript">
+	      We're supported by the Sloan Foundation...
+            </div>
+          </td>
+          <td>&nbsp;</td>
+          <td class="slide" popcorn-slideshow="67">
+            <img src="images/mozilla.png" alt="Mozilla" />
+            <div class="transcript">
+	      ...and Mozilla...
+            </div>
+          </td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="slide" popcorn-slideshow="68">
+      <h2>Support</h2>
+      <table>
+        <tr>
+          <td valign="middle"><img src="images/indiana.png" alt="Indiana University" /></td>
+          <td valign="middle"><img src="images/qmul.png" alt="Queen Mary University London" /></td>
+          <td valign="middle"><img src="images/scinet.png" alt="SciNet" /></td>
+          <td valign="middle"><img src="images/toronto.png" alt="University of Toronto" /></td>
+        </tr>
+        <tr>
+          <td valign="middle"><img src="images/microsoft.png" alt="Microsoft" /></td>
+          <td valign="middle"><img src="images/mathworks.png" alt="The MathWorks" /></td>
+          <td valign="middle"><img src="images/lanl.png" alt="Los Alamos National Laboratory" /></td>
+          <td valign="middle"><img src="images/enthought.png" alt="Enthought" /></td>
+        </tr>
+        <tr>
+          <td valign="middle"><img src="images/ukmo.png" alt="UK Met Office" /></td>
+          <td valign="middle"><img src="images/mitacs.png" alt="MITACS" /></td>
+          <td valign="middle"><img src="images/michigan-state.png" alt="Michigan State University" /></td>
+          <td valign="middle"><img src="images/python.png" alt="Python Software Foundation" /></td>
+        </tr>
+        <tr>
+          <td colspan="2" valign="middle"><img src="images/scimatic.png" alt="Scimatic" /></td>
+          <td colspan="2" valign="middle"><img src="images/sharcnet.png" alt="SharcNet" /></td>
+        </tr>
+      </table>
+      <div class="transcript">
+	...and in the past, have had support from a wide range of universities, government labs, companies, and other organizations.
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="73">
+      <h2>Contributing</h2>
+      <p>Give us feedback</p>
+      <div class="transcript">
+	If you'd like to contribute, you can give us feedback...
+      </div>
+      <div class="slide" popcorn-slideshow="77">
+        <p>Answer questions</p>
+        <div class="transcript">
+	  ...answer questions...
+        </div>
+      </div>
+      <div class="slide" popcorn-slideshow="78">
+        <p>Create lessons and exercises</p>
+        <div class="transcript">
+	  ...create lessons and exercises...
+        </div>
+      </div>
+      <div class="slide" popcorn-slideshow="80">
+        <p>Organize and run workshops</p>
+        <div class="transcript">
+	  ...or organize and run a workshop in your area.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" popcorn-slideshow="82">
+      <h2>Contact</h2>
+      <p><a href="http://software-carpentry.org">http://software-carpentry.org</a></p>
+      <div class="transcript">
+	For more information, check out our web site at http://software-carpentry.org...
+      </div>
+      <div class="slide" popcorn-slideshow="87">
+        <p><a href="https://twitter.com/#!/swcarpentry">@swcarpentry</a></p>
+        <div class="transcript">
+	  ...follow us on twitter as @swcarpentry...
+        </div>
+      </div>
+      <div class="slide" popcorn-slideshow="89">
+        <p><a href="mailto:info@software-carpentry.org">info@software-carpentry.org</a></p>
+        <div class="transcript">
+	  ...or contact us by email at info@software-carpentry.org.
+        </div>
+      </div>
+      <div class="slide" popcorn-slideshow="90">
+        <img src="images/software-carpentry-banner-with-hammer-380x80.png" alt="Software Carpentry logo" />
+        <div class="transcript">
+	  Thank you.
+        </div>
+      </div>
+    </section>
+
+    <p class="deck-status">
+      <span class="deck-status-current">1</span>
+      /
+      <span class="deck-status-total">12</span>
+    </p>
+    <form action="." method="get" class="goto-form">
+      <label for="goto-slide">Go to slide:</label>
+      <input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+      <datalist id="goto-datalist"></datalist>
+      <input type="submit" value="Go">
+    </form>
+
+    <a href="#" class="deck-prev-link deck-nav-disabled" title="Previous">←</a>
+    <a href="#bugs" class="deck-next-link" title="Next">→</a>
+      
+  </div>
+
+  <audio id="audio" controls preload="auto" style="display:none;width:100%;">
+    <source src="media/pitch.ogg"/>
+    <source src="media/pitch.mp3"/>
+  </audio>
+
+  <div id="slideshow-transcript" class="popcorn-transcript"></div>
+
+  <!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="external/jquery/jquery-1.7.min.js"><\/script>')</script>
+    
+  <script src="external/mediaelement/build/mediaelement-and-player.min.js"></script>
+  <link rel="stylesheet" href="external/mediaelement/build/mediaelementplayer.css" />
+
+    <!-- Deck Core and extensions -->
+    <script src="external/deckjs/core/deck.core.js"></script>
+    <script src="external/deckjs/extensions/hash/deck.hash.js"></script>
+    <script src="external/deckjs/extensions/menu/deck.menu.js"></script>
+    <script src="external/deckjs/extensions/goto/deck.goto.js"></script>
+    <script src="external/deckjs/extensions/status/deck.status.js"></script>
+    <script src="external/deckjs/extensions/navigation/deck.navigation.js"></script>
+
+    <!-- Specific to this page -->
+    <script src="js/introduction.js"></script>
+    
+  </body>
+</html>
