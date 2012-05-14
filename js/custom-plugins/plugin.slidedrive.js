@@ -28,7 +28,7 @@
             type: "text",
             label: "Transcript (HTML)"
           },
-          target: "deckjs-container",
+          target: "audio",
         }
       },
       _setup: function( options ) {

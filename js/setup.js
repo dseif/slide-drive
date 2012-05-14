@@ -1,13 +1,6 @@
 addEventListener( "DOMContentLoaded", function() {
   "use strict";
   
-  /* Minimize jQuery usage. Note anywhere it *is* used:
-  - $().data() for associating SlideButterOptions with DOM elements.
-  - $.deck() isn't *really* jQuery
-  - $().mediaElementPlayer also isn't *really* jQuery.
-  
-  */
-
   var printableElement = null,
       showingPrintable = false,
       inButter         = !!window.Butter,
@@ -38,7 +31,6 @@ addEventListener( "DOMContentLoaded", function() {
     var existingInstance =  $( _el ).data( "slidedrive.butteroptions" );
     
     if ( existingInstance ) {
-      console.log( "Returning cached SlideButterOptions for " + existingInstance.slideId );
       return existingInstance;
     }
     
