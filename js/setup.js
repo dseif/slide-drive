@@ -65,7 +65,7 @@ addEventListener( "DOMContentLoaded", function() {
             
             sibStartAttr = sib.getAttribute( "data-popcorn-slideshow" );
             
-            if ( sibStartAttr != null ) {
+            if ( sibStartAttr ) {
               sibStart = +sibStartAttr;
               
               if ( sibStart >= start ) {
@@ -92,7 +92,7 @@ addEventListener( "DOMContentLoaded", function() {
         enumerable: true,
         get: function() {
           var slideId = _el.getAttribute( "id" );
-          if ( slideId == null ) {
+          if ( !slideId ) {
             slideId = (_el.textContent.replace( /[^a-z0-9]/gi, '' ).substring( 0, 8 )
                         .toLowerCase() || "s") + "-" + ( Math.random() * (1 << 30) | 0 ).toString( 36 );
             _el.setAttribute( "id", slideId );
@@ -345,48 +345,6 @@ addEventListener( "DOMContentLoaded", function() {
       }
     });
     
-  }
-
-  // Returns an array with { element, transcript, start, end, id } for each slide in the document.
-  function parseSlides ( slideElements ) {
-    var slides = [],
-        currentSlide,
-        previousSlide = {};
-  
-    // Note the lack of sanity checking.
-    
-    for ( var i = 0; i < slideElements.length; i++ ) {
-      currentSlide = {
-        start: (i > 0) ? +slideElements[ i ].getAttribute( "data-popcorn-slideshow" ) : 0,
-        element: slideElements[ i ],
-        id: slideElements[ i ].getAttribute( "id" )
-      };
-      
-      var transcriptElement = slideElements[ i ].querySelector( ".transcript" );
-      if ( transcriptElement ) {
-        if ( transcriptElement.innerHTML != null ) {
-          currentSlide.transcriptSource = transcriptElement.innerHTML;
-        } else {
-          // If transcript is in a non-HTML (SVG) node, we interpret its textContent as HTML.
-          currentSlide.transcriptSource = transcriptElement.textContent;
-        }
-      } else {
-        currentSlide.transcriptSource = "";
-      }
-      
-      slides.push( currentSlide );
-      previousSlide.end = currentSlide.start;
-      previousSlide = currentSlide;
-    }
-    
-    // previousSlide.end = popcorn.duration();
-    
-    if ( previousSlide.end < previousSlide.start ) {
-      console.warn( "Total slide duration exceeds audio duration." );
-      previousSlide.end = previousSlide.start + 5;
-    }
-    
-    return slides;
   }
   
   function resizeTranscript () {
