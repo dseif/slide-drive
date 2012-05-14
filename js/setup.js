@@ -18,8 +18,6 @@ jQuery(function ($) {
       fromButter       = !inButter && $( "body" ).hasClass( "slide-drive-butter" ),
       popcorn          = null;
   
-  window.slideData = null;
-  
   init();
   
   /*
@@ -28,8 +26,10 @@ jQuery(function ($) {
   */
   
   // Now, this really need some tests.
+  // store it in data!
   
-  function SlideProxy ( elOrId ) {
+  window.SlideButterOptions = SlideButterOptions
+  function SlideButterOptions ( elOrId ) {
     var _el;
     
     if ( typeof elOrId === "string" ) {
@@ -41,23 +41,38 @@ jQuery(function ($) {
     } else {  
       _el = elOrId;
       
-      if ( !("nodeType" in _el) ) {
-        throw new Error( "SlideProxy argument must be a DOM node or ID thereof." );
+      if ( !(_el && "nodeType" in _el) ) {
+        throw new Error( "SlideButterOptions argument must be a DOM node or ID thereof.\nIt was " + _el );
       }
     }
+    
+    var existingInstance =  $( _el ).data( "slidedrive.butteroptions" );
+    
+    if ( existingInstance ) {
+      console.log( "Returning cached SlideButterOptions for " + existingInstance.slideId );
+      return existingInstance;
+    }
+    
+    if ( !(this instanceof SlideButterOptions) ) {
+      return new SlideButterOptions( _el );
+    }
+    
+    console.log( _el );
+    
+    $( _el ).data( "slidedrive.butteroptions", this );
     
     Object.defineProperties( this, {
       start: {
         enumerable: true,
         get: function() {
-          return +_el.getAttribute( "data-popcorn-slideshow" );
+          return +_el.getAttribute( "data-popcorn-slideshow" ) || 0;
         },
         set: function( start ) {
           _el.setAttribute( "data-popcorn-slideshow", start );
           
           var successor = null,
               parent = _el.parentNode,
-              siblings = (console.log(_el), parent.childNodes),
+              siblings = parent.childNodes,
               i, sib, sibStartAttr, sibStart;
           
           // Loop backwards through siblings to find the new new location for this element.
@@ -87,7 +102,7 @@ jQuery(function ($) {
               parent.insertBefore( _el, successor );
             }
             
-            $.deck( ".slides" );
+            $.deck( ".slide" );
           }
         }
       },
@@ -97,18 +112,11 @@ jQuery(function ($) {
         get: function() {
           var slideId = _el.getAttribute( "id" );
           if ( slideId == null ) {
-            slideId = _el.textContent.replace( /[^a-z0-9]/gi, '' ).substring( 0, 8 )
-                        .toLowerCase() + "-" + ( Math.random() * (1 << 30) | 0 ).toString( 36 );
+            slideId = (_el.textContent.replace( /[^a-z0-9]/gi, '' ).substring( 0, 8 )
+                        .toLowerCase() || "s") + "-" + ( Math.random() * (1 << 30) | 0 ).toString( 36 );
             _el.setAttribute( "id", slideId );
           }
           return slideId;
-        },
-        set: function ( id ) { 
-          var el = document.getElementById( id );
-          if ( el == null ) {
-            throw new Error( "Attempted to set slideId to non-existent ID." );
-          }
-          _el = el;
         }
       },
       
@@ -131,7 +139,7 @@ jQuery(function ($) {
           var transcriptEl = _el.querySelector(".transcript");
           
           if ( transcriptEl == null ) {
-            if ( el.innerHTML != null ) {
+            if ( _el.innerHTML != null ) {
               transcriptEl = document.createElement( "div" );
               transcriptEl.innerHTML = transcriptSource;
             } else {
@@ -142,9 +150,9 @@ jQuery(function ($) {
             _el.insertBefore( transcriptEl, _el.firstChild );
           } else {
             if ( transcriptEl.innerHTML != null ) {
-              _el.innerHTML = transcriptSource;
+              transcriptEl.innerHTML = transcriptSource;
             } else {
-              _el.innerText = transcriptSource;
+              transcriptEl.innerText = transcriptSource;
             }
           }
         }
@@ -156,8 +164,6 @@ jQuery(function ($) {
   
   function init () {
     console.log( "Starting Slide Drive initialization." );
-    
-    initSlideIds();
     
     if ( fromButter ) {
       // Butter adds <base> tag to our document to make sure the resouce paths are correct,
@@ -231,6 +237,14 @@ jQuery(function ($) {
         // This will need a bit more nuance when other Popcorn events can be added.
         $( "script", root ).last().remove();
       });
+      
+      // Bind file drop handling to each Butter track.
+      butter.media[ 0 ].listen( "trackadded" , function( e ) {
+        var track = e.data;
+        track.view.listen( "filesdroped", function( e ) {
+          onDroppedFilesOnTrack( e.data.files, e.data.track, e.data.start );
+        });
+      })
     }
     
     $.deck( ".slide" );
@@ -247,7 +261,7 @@ jQuery(function ($) {
     var slidesEls = document.querySelectorAll( ".slide" );
     
     for ( var i = 0; i < slidesEls.length; ++i ) {
-      addEvent( new SlideProxy( slidesEls[ i ] ) );
+      addEvent( SlideButterOptions( slidesEls[ i ] ) );
     }
     
     // $.deck.enableScale();
@@ -315,7 +329,7 @@ jQuery(function ($) {
       // Except we can't be sure because going to the current slide is a noop.
       
       var container = $( ".deck-container" )[ 0 ],
-          slide = slideData[ 0 ].element,
+          slide = $( ".slide" )[ to ],
           parentSlides = $( slide ).parents( ".slide" );
       
       // Size should be based on height of the current master slide, not sub-slide.
@@ -329,36 +343,17 @@ jQuery(function ($) {
         container.style.overflow = "hidden";
       }
       
-      // The slide with the lower index gets priority -- specific isn't important but consistency is.
-      
-      // if ( popcorn.currentTime() < slideData[ to ].start || popcorn.currentTime() > slideData[ to ].end )
-      
-      var toSlide = slideData[ to ],
-          fromSlide = slideData[ from ],
+      var toSlide = SlideButterOptions( $( ".slide" )[ to ] ),
+          fromSlide = SlideButterOptions( $( ".slide" )[ from ] ),
           currentTime = popcorn.currentTime();
       
-      if( popcorn.currentTime() < slideData[ to ].start || popcorn.currentTime() > slideData[ to ].end ) {
-        popcorn.currentTime( slideData[ to ].start );
+      if( popcorn.currentTime() < toSlide.start || popcorn.currentTime() > fromSlide.end ) {
+        popcorn.currentTime( SlideButterOptions( $(".slide")[ to ] ) );
       }
     });
     
   }
-  
-  // Iterates through all slides and adds a random "id" attribute to any without one.
-  function initSlideIds () {
-    var slideElements = $( ".slide" ),
-        i,
-        currentId;
-    
-    for ( var i = 0; i < slideElements.length; i++ ) {
-      if ( !(slideElements[ i ].getAttribute( "id" )) ) {
-        slideElements[ i ].setAttribute( "id", 
-          slideElements[ i ].textContent.replace(/[^a-z0-9]/gi, '').substring(0, 8).toLowerCase() + "-"
-          + (Math.random() * (1 << 30) | 0).toString(36));
-      }
-    }
-  }
-  
+
   // Returns an array with { element, transcript, start, end, id } for each slide in the document.
   function parseSlides ( slideElements ) {
     var slides = [],
@@ -406,6 +401,221 @@ jQuery(function ($) {
     elem.style.height = (document.body.offsetHeight - elem.offsetTop - 3)   + "px";
     elem.style.maxWidth = (document.body.offsetWidth)+ "px";
   }
+  
+  
+  /* Verifies that the right type of files were dropped, otherwise displays an error.
+     If they have been then unbind the drop handlers, read the file and continue to handleDroppedSVG.
+  */  
+  function onDroppedFilesOnTrack ( files, track, time ) {
+    var i, l, file, reader;
+    
+    for ( i = 0, l = files.length; i < l; ++i ) {
+      file = files[ i ];
+      reader = new FileReader();
+      
+      if ( file.type != "image/svg+xml" ) {
+        continue;
+      }
+
+      console.log( "Reading SVG..." );
+      
+      reader.readAsText(file, "UTF-8" );
+      reader.onloadend = function () {
+        if (reader.readyState != FileReader.DONE) {
+          return;
+        }
+
+        var svgRoot = $( "<div>" ).html( reader.result ).children( "svg" )[ 0 ];
+
+        handleDroppedSVG(svgRoot, track, time);
+      };
+    }
+  }
+  
+  // Maps of lowercase known font names to list of fallback fnts.
+  // The system copy will have top priority, followed by the embedded version, then the fallbacks.
+  
+  var knownFonts = {
+    // We expect "safer" fonts or metrics-maching fallbacks to be present on ~90%+ of systems.
+    safer: { 
+      "arial": [ "Liberation Sans", "Helvetica", "Arimo", "sans-serif" ],
+      "helvetica": [ "Liberation Sans", "Arial", "Arimo", "sans-serif" ],
+      "liberation sans": [ "Helvetica", "Arial", "Arimo", "sans-serif" ],
+      "arimo": [ "Liberation Sans", "Helvetica", "Arial", "sans-serif" ],
+
+      "times new roman": [ "Liberation Serif", "Times", "Tinos", "serif" ],
+      "times": [ "Times New Roman", "Liberation Serif", "Tinos", "serif" ],
+      "liberation serif": [ "Times New Roman", "Times", "Tinos", "serif" ],
+      "tinos": [ "Liberation Serif", "Times New Roman", "Times", "serif" ],
+
+      "courier new": [ "Liberation Mono", "Cousine", "monospace" ],
+      "liberation mono": [ "Courier New", "Cousine", "monospace" ],
+      "cousine": [ "Liberation Mono", "Courier New", "monospace" ],
+    
+      "arial black": [ "sans-serif" ],
+    
+      "georgia": [ "serif" ],
+    
+      "impact": [ "sans-serif" ]
+    },
+    
+    unsafe: {
+      "arial narrow": [ "Liberation Sans Narrow", "sans-serif" ],
+      "liberation sans narrow": [ "arial narrow", "sans-serif" ],
+
+      "menlo": [ "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "monospace" ],
+      "dejavu sans mono": [ "Bitstream Vera Sans Mono", "menlo", "monospace" ],
+      "bitstream vera sans mono": [ "DejaVu Sans Mono", "menlo", "monospace" ],
+
+      "courier": [ "monospace" ],
+
+      "consolas": [ "monospace" ],
+      
+      "monaco": [ "monospace" ],
+      
+      "lucida console": [ "monospace" ]
+    }
+  };
+  
+  function makeFontStack( fontName ) {
+    fontName = fontName.replace( / embedded$/, '' );
+    
+    var fontKey = fontName.toLowerCase(),
+        fontNames = [ fontName, fontName + " embedded" ];
+    
+    if ( fontKey in knownFonts.safer ) {
+      fontNames.push.apply( fontNames, knownFonts.safer[ fontKey ] );
+    } else if ( fontKey in knownFonts.unsafe ) {
+      fontNames.push.apply( fontNames, knownFonts.unsafe[ fontKey ] );
+    }
+    
+    return fontNames.join( "," );
+  }
+  
+  function stripWhitespaceNodes ( el ) {
+    if ( el.nodeType === 3 ) {
+      if ( /^\s*$/.test( el.textContent) ) {
+        el.parentNode.removeChild( el )
+      }
+    } else {
+      for ( var i = 0; i < el.childNodes.length; ++i ) {
+        stripWhitespaceNodes( el.childNodes[ i ] );
+      }
+    }
+  }
+  
+  /* Given the root of a loaded SVG element, proccess it and split into elements for each slide.
+     Calls addSlide on each processed slide.
+  */
+  function handleDroppedSVG ( root, track, start ) {
+    console.log( "Read SVG from file." );
+    
+    // Remove whitespace text nodes between <text> nodes.
+    
+    var textGroups = $.unique( $( "text", root ).map(function() { return $(this).closest("g")[0]; }).get() );
+    textGroups.map(stripWhitespaceNodes);
+    
+    // Embedded fonts? Detach before cloning, then re-add to the first slide.
+    
+    var i, l, f, d;
+    
+    var fontUsage = {},
+        fontUsers = $( "[font-family]", root );
+    
+    for ( i = 0, l = fontUsers.length; i < l; ++i ) {
+      var element = fontUsers[ i ],
+          fontFamily = element.getAttribute( "font-family" );
+      
+      fontFamily = fontFamily.replace( / embedded$/, '' ).toLowerCase();
+      
+      if ( !(fontFamily in fontUsage) ) {
+        fontUsage[ fontFamily ] = [ element ];
+      } else {
+        fontUsage[ fontFamily ].push( element );
+      }
+      
+      element.setAttribute( "font-family", makeFontStack( fontFamily ) );
+    }
+    
+    // TODO - display this somewhere
+    for ( var name in fontUsage ) {
+      var status;
+      if ( name in knownFonts.safer ) {
+        status = "Safe";
+      } else if ( name in knownFonts.unsafe ) {
+        status = "Known, Unsafe";
+      } else {
+        status = "Unknown, Unsafe";
+      }
+    }
+    
+    var svgSlideSubtrees = $( ".Slide", root ).removeClass( "Slide" ).addClass( "libreoffice-slide" ),
+        svgSlideIds = svgSlideSubtrees.map(function() {
+          return this.getAttribute( "id" );
+        });
+    
+    var cumulativeDuration = +($( ".deck-container .slide" ).last().attr( "data-popcorn-slideshow" ) || 0) + 3;;
+    
+    i = 0;
+    var addSlideInterval = setInterval(function() {
+      if ( i >= svgSlideIds.length ) {
+        clearInterval( addSlideInterval );
+        return;
+      }
+      
+      var svgSlideId = svgSlideIds[ i ],
+          svgSlide = root.cloneNode( true );
+      
+      // We only want embedded fonts to be included in the first slide, because from there it will be
+      // usable from the others, so we remove them from the root after the first slide is cloned.
+      if ( i === 0 ) {
+        $( "font, font-face, missing-glyph", root ).remove();
+      }
+      
+      $( ".libreoffice-slide", svgSlide ).each( function () {
+        if ( $( this ).attr( "id" ) !== svgSlideId ) {
+          $( this ).remove();
+        } else {
+          $( this ).attr( "visibility", "visible" );
+        }
+      } );
+      $( "[visible=hidden] ", this ).remove()
+      
+      var container = document.querySelector( ".deck-container" );
+      
+      var slideEl = document.createElement( "section" ),
+          transEl = document.createElement( "div" );
+      
+      console.log("adding slide " + svgSlideId);
+      
+      slideEl.setAttribute( "class", "slide" );
+      slideEl.setAttribute( "data-popcorn-slideshow", start + i * 1 ); // TODO better start times
+      
+      transEl.setAttribute( "class", "transcript" );
+      
+      $( slideEl ).append([ transEl, svgSlide ]);
+      
+      slideEl.appendChild( transEl );
+      
+      slideEl.appendChild( svgSlide );
+      
+      container.appendChild( slideEl );
+      
+      track.addTrackEvent({
+        type: "slidedrive",
+        popcornOptions: SlideButterOptions( slideEl )
+      });
+      
+      cumulativeDuration += 5;
+      
+      var currentSlide = $.deck( "getSlide" )[0];
+      $.deck( ".slide" );
+      $.deck( "go", currentSlide );
+      
+      i++;
+    }, 200);
+  }
+
   
   function initPrintable () {
     var body = document.getElementById( "printable" ),
@@ -492,14 +702,16 @@ jQuery(function ($) {
       function createElement( times ) {
         var teDiv = document.createElement( "span" ),
             spacer = document.createElement( "span" ),
-            endTime = ( times + 1 ) > slideData.length - 1 ? +slideData[ times ].start: slideData[ times + 1 ].start,
+            slides = $( ".slide" ),
+            lastSlideOptions = SlideButterOptions( slides[ times ] ),
+            endTime = ( times + 1 ) > slides.length - 1 ? lastSlideOptions.start: lastSlideOptions.start,
             recurse = false;
 
 
         if( innerContainer.children.length === 0 ) {
           innerContainer.appendChild( teDiv );
           innerContainer.appendChild( spacer );
-          teDiv.style.width = ( pixelsPerSecond * +slideData[ times ].start ) / ( container.offsetWidth / 100 ) + "%";
+          teDiv.style.width = ( pixelsPerSecond * lastSlideOptions.start ) / ( container.offsetWidth / 100 ) + "%";
           teDiv.id = "popcorn-slideshow-div-startPadding";
           recurse = true;
         } else {
@@ -507,9 +719,9 @@ jQuery(function ($) {
           innerContainer.appendChild( spacer );
           // such a gross block of code, must fix this
           if( userAgent[ userAgent.length - 1 ].split( "/" )[ 0 ] === "Firefox" ) {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - +slideData[ times ].start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - lastSlideOptions.start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
           } else {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - +slideData[ times ].start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - lastSlideOptions.start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
           }
           teDiv.id = "popcorn-slideshow-div-" + count;
         }
@@ -526,7 +738,7 @@ jQuery(function ($) {
       containerWidth = container.offsetWidth;
       pixelsPerSecond = containerWidth / popcorn.duration();
 
-      for( var i = 0, l = slideData.length; i < l; i++ ) {
+      for( var i = 0, l = $(".slide").length; i < l; i++ ) {
         createElement(i)
       }
 

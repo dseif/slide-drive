@@ -44,6 +44,17 @@
     .deck-container {
       height: 80%;
     }
+    
+    body {
+      margin: 0 0 0 0 !important;
+    }
+  </style>
+  
+  <style data-butter-exclude>
+    html {
+      padding-top: 35px;
+      padding-bottom: 210px;
+    }
   </style>
 </head>
 
@@ -90,12 +101,6 @@
     <div id="slideshow-transcript" data-butter="target" class="popcorn-transcript"></div>
 
     <!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
-    
-    <style>
-      body {
-        margin: 0 0 0 0 !important;
-      }
-    </style>
   </div>
   <div id="printable" class="deck-container printable-body" style="display:none;">
   </div>
@@ -116,6 +121,5 @@
 
       <!-- Specific to this page -->
       <script src="js/setup.js"></script>
-      <script src="import-svg.js" data-butter-exclude></script>
   </body>
 </html>
