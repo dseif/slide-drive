@@ -1,32 +1,21 @@
-jQuery(function ($) {
-  "use strict"
+addEventListener( "DOMContentLoaded", function() {
+  "use strict";
   
-  /*
-    Three modes:
-    - Standard
-    - in Butter
-      - Non-butter keyboard shortcuts disabled
-      - Semantic interpretation targets Butter timeline
-    - from Butter
-      - Semantic interpretation disabled    
+  /* Minimize jQuery usage. Note anywhere it *is* used:
+  - $().data() for associating SlideButterOptions with DOM elements.
+  - $.deck() isn't *really* jQuery
+  - $().mediaElementPlayer also isn't *really* jQuery.
+  
   */
-  
+
   var printableElement = null,
       showingPrintable = false,
       inButter         = !!window.Butter,
       butter           = null,
-      fromButter       = !inButter && $( "body" ).hasClass( "slide-drive-butter" ),
+      fromButter       = !inButter && document.querySelector( "body" ).hasAttribute( "data-butter-crufted" ),
       popcorn          = null;
   
   init();
-  
-  /*
-    Used as the Popcorn options object, and all kinds of other magic.
-    I'll describe it once I'm actually sure what I'm doing with it.
-  */
-  
-  // Now, this really need some tests.
-  // store it in data!
   
   window.SlideButterOptions = SlideButterOptions
   function SlideButterOptions ( elOrId ) {
@@ -166,9 +155,12 @@ jQuery(function ($) {
     console.log( "Starting Slide Drive initialization." );
     
     if ( fromButter ) {
-      // Butter adds <base> tag to our document to make sure the resouce paths are correct,
-      // that it will break our anchor links and have nasty side-effects.
-      $( "base" ).first().remove();
+      // Butter adds <base> tag to our document to make sure the resouce paths are correct.
+      // After loading, it will break our anchor links and have nasty side-effects.
+      
+      var base = document.querySelector( "base" );
+      base.parentNode.removeChild( base );
+      
     }
     
     if ( inButter ) {
@@ -230,12 +222,21 @@ jQuery(function ($) {
     if ( inButter ) {
       butter.page.listen( "getHTML", function ( e ) {
         var root = e.data;
-        $( ".mejs-container", root ).replaceWith( $( ".mejs-container audio", root ) );
+        
+        // Remove the rendered controls from around the audio element.
+        var renderedContainer = root.querySelector( ".mejs-container" ),
+            containedAudio = renderedContainer.querySelector( "audio" );
+        
+        renderedContainer.parentNode.replaceChild( containedAudio, renderedContainer );
         
         // We don't want Butter's copy of the popcorn events. They'll have been mirroed
         // back into the DOM, which we'll parse them back out of.
         // This will need a bit more nuance when other Popcorn events can be added.
-        $( "script", root ).last().remove();
+        
+        var pageScripts = root.querySelector( "script" ),
+            lastScript = pageScripts[ pageScripts.length - 1 ];
+        
+        lastScript.parentNode.removeChild( lastScript );
       });
       
       // Bind file drop handling to each Butter track.
@@ -328,8 +329,8 @@ jQuery(function ($) {
       // Err... or, since we can be sure that this will run, we can clear it here.
       // Except we can't be sure because going to the current slide is a noop.
       
-      var container = $( ".deck-container" )[ 0 ],
-          slide = $( ".slide" )[ to ],
+      var container = document.querySelector( ".deck-container" ),
+          slide = document.querySelectorAll( ".slide" )[ to ],
           parentSlides = $( slide ).parents( ".slide" );
       
       // Size should be based on height of the current master slide, not sub-slide.
@@ -343,12 +344,12 @@ jQuery(function ($) {
         container.style.overflow = "hidden";
       }
       
-      var toSlide = SlideButterOptions( $( ".slide" )[ to ] ),
-          fromSlide = SlideButterOptions( $( ".slide" )[ from ] ),
+      var toSlide = SlideButterOptions( document.querySelectorAll( ".slide" )[ to ] ),
+          fromSlide = SlideButterOptions( document.querySelectorAll( ".slide" )[ from ] ),
           currentTime = popcorn.currentTime();
       
       if( popcorn.currentTime() < toSlide.start || popcorn.currentTime() > fromSlide.end ) {
-        popcorn.currentTime( SlideButterOptions( $(".slide")[ to ] ) );
+        popcorn.currentTime( SlideButterOptions( document.querySelectorAll( ".slide" )[ to ] ) );
       }
     });
     
@@ -369,7 +370,7 @@ jQuery(function ($) {
         id: slideElements[ i ].getAttribute( "id" )
       };
       
-      var transcriptElement = $( ".transcript", slideElements[ i ] )[0];
+      var transcriptElement = slideElements[ i ].querySelector( ".transcript" );
       if ( transcriptElement ) {
         if ( transcriptElement.innerHTML != null ) {
           currentSlide.transcriptSource = transcriptElement.innerHTML;
@@ -425,7 +426,11 @@ jQuery(function ($) {
           return;
         }
 
-        var svgRoot = $( "<div>" ).html( reader.result ).children( "svg" )[ 0 ];
+        var tmpContainer = document.createElement( "div" ),
+            svgRoot;
+        
+        tmpContainer.innerHTML = reader.result;
+        svgRoot = tmpContainer.querySelector( "svg" );
 
         handleDroppedSVG(svgRoot, track, time);
       };
@@ -520,7 +525,7 @@ jQuery(function ($) {
     var i, l, f, d;
     
     var fontUsage = {},
-        fontUsers = $( "[font-family]", root );
+        fontUsers = root.querySelector( "[font-family] ");
     
     for ( i = 0, l = fontUsers.length; i < l; ++i ) {
       var element = fontUsers[ i ],
@@ -549,12 +554,16 @@ jQuery(function ($) {
       }
     }
     
-    var svgSlideSubtrees = $( ".Slide", root ).removeClass( "Slide" ).addClass( "libreoffice-slide" ),
-        svgSlideIds = svgSlideSubtrees.map(function() {
-          return this.getAttribute( "id" );
+    var svgSlideSubtrees = root.querySelectorAll( ".Slide" ),
+        svgSlideIds = $.map( svgSlideSubtrees, function( el ) {
+          return el.getAttribute( "id" );
         });
     
-    var cumulativeDuration = +($( ".deck-container .slide" ).last().attr( "data-popcorn-slideshow" ) || 0) + 3;;
+    $( svgSlideSubtrees ).removeClass( "Slide" ).addClass( "libreoffice-slide" );
+    
+    var slides = document.querySelectorAll( ".deck-container .slide" );
+    
+    var cumulativeDuration = (slides[ slides.length - 1 ] && slides[ slides.length - 1 ].getAttribute( "data-popcorn-slideshow" ) || 0) + 3;
     
     i = 0;
     var addSlideInterval = setInterval(function() {
@@ -572,14 +581,24 @@ jQuery(function ($) {
         $( "font, font-face, missing-glyph", root ).remove();
       }
       
-      $( ".libreoffice-slide", svgSlide ).each( function () {
-        if ( $( this ).attr( "id" ) !== svgSlideId ) {
-          $( this ).remove();
+      var j, candidate, cruftsAndSlide = svgSlide.querySelectorAll( ".libreoffice-slide" );
+      
+      for ( j = 0; j < cruftsAndSlide.length; j++ ) {
+        candidate = cruftsAndSlide[ j ];
+        
+        if ( candidate.getAttribute( "id" ) !== svgSlideId ) {
+          candidate.parentNode.removeChild( candidate );
         } else {
-          $( this ).attr( "visibility", "visible" );
+          candidate.setAttribute( "visibility", "visibile" );
         }
-      } );
-      $( "[visible=hidden] ", this ).remove()
+      }
+      
+      var hiddenElements = svgSlide.querySelectorAll( "[visible=hidden]" );
+      
+      // Remove hidden elements - they're of no interest to us.
+      for ( j = 0; j < hiddenElements.length; j++ ) {
+        hiddenElements[ j ].parentNode.removeChild( hiddenElements[ j ] );
+      }
       
       var container = document.querySelector( ".deck-container" );
       
@@ -592,8 +611,6 @@ jQuery(function ($) {
       slideEl.setAttribute( "data-popcorn-slideshow", start + i * 1 ); // TODO better start times
       
       transEl.setAttribute( "class", "transcript" );
-      
-      $( slideEl ).append([ transEl, svgSlide ]);
       
       slideEl.appendChild( transEl );
       
@@ -702,7 +719,7 @@ jQuery(function ($) {
       function createElement( times ) {
         var teDiv = document.createElement( "span" ),
             spacer = document.createElement( "span" ),
-            slides = $( ".slide" ),
+            slides = document.querySelectorAll( ".slide" ),
             lastSlideOptions = SlideButterOptions( slides[ times ] ),
             endTime = ( times + 1 ) > slides.length - 1 ? lastSlideOptions.start: lastSlideOptions.start,
             recurse = false;
@@ -734,11 +751,11 @@ jQuery(function ($) {
        recurse && createElement( times );
       }
       
-      container = $( ".mejs-time-total" )[ 0 ];
+      container = document.querySelector( ".mejs-time-total" );
       containerWidth = container.offsetWidth;
       pixelsPerSecond = containerWidth / popcorn.duration();
 
-      for( var i = 0, l = $(".slide").length; i < l; i++ ) {
+      for( var i = 0, l = document.querySelectorAll( ".slide" ).length; i < l; i++ ) {
         createElement(i)
       }
 
@@ -755,4 +772,4 @@ jQuery(function ($) {
       div.className = "popcorn-slideshow";
 
   }
-});
+}, false );
