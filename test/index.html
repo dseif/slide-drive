@@ -1,0 +1,316 @@
+<!doctype html><html><head>
+  <meta charset="utf-8" />
+  <title>Slide Drive Tests</title>  
+</head><body>
+  <div id="results"></div>
+  <div id="workingArea"></div>
+
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="external/jquery/jquery-1.7.min.js"><\/script>')</script>
+<script>
+function getFramedWindow ( path, toCleanUp ) {
+  var el = document.createElement( "iframe" );
+  el.src = "../template.html";
+  el.width = 1280
+  el.height = 768;
+  document.getElementById( "workingArea" ).appendChild( el );
+  toCleanUp(function () {
+    document.getElementById( "workingArea" ).removeChild( el );
+  })
+  return el.contentWindow;
+}
+
+function getAsBlob ( path, type ) {
+  // Syncronously produces a Blob of the file at the specified path.
+
+  var bb = new ( window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder ),
+      src = $.ajax( path, { async: false } ).responseText;
+  bb.append( src );
+  return bb.getBlob( type );
+}
+
+var testSvg = getAsBlob( "test-presentation.svg", "image/svg+xml" ),
+    testSvg_slideCount = 9;
+
+atest( "Popcorn, Butter, jQuery and Deck.js initialized.", function ( assert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function poll () {
+    return ( frame.Popcorn && frame.Butter && frame.jQuery && frame.jQuery.deck ) ? true : poll;
+  }
+});
+
+atest( "Popcorn and Butter instances exposed on window (for testing).", function ( assert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function poll () {
+    return ( frame.popcorn && frame.butter ) ? true : poll;
+  }
+} );
+
+atest( "_slideDriveReady is set (for testing).", function ( assert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function poll () {
+    return ( frame._slideDriveReady ) ? true : poll;
+  }
+} );
+
+atest( "Playing advances > 2.75 seconds in 3 seconds.", function ( assert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function pollReady () {
+    return ( frame._slideDriveReady ) ? onReady : pollReady;
+  }
+
+  function onReady () {
+    var start = new Date;
+    frame.popcorn.play();
+
+    return function pollAdvancement () {
+      var delta = (new Date - start);
+
+      assert( delta < 3750, "three seconds must not pass" );
+
+      return ( frame.popcorn.currentTime() >= 2.75 ) ? true : pollAdvancement;
+    };
+  }
+} );
+
+atest( "Exported HTML doesn't include rendered MediaElement controls.", function ( assert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function pollReady () {
+    return ( frame._slideDriveReady ) ? onReady : pollReady;
+  }
+
+  function onReady () {
+    var html = frame.butter.page.getHTML();
+
+    assert( ! /mejs-/.test( html ), "HTML must not contain MediaElement controls (\"mejs-\")." );
+
+    pass();
+  }
+} );
+
+atest( "Triggering filesdropped on track produces any new events", function ( asssert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function pollReady () {
+    return ( ! frame._slideDriveReady ) ? pollReady : function () {
+      frame.butter.tracks[ 0 ].view.dispatch( "filesdropped", {
+        files: [ testSvg ],
+        track: frame.butter.tracks[ 0 ],
+        start: 5
+      } );
+      
+      return pollDone;
+    };
+  }
+  
+  function pollDone () {
+    return ( frame.butter.tracks[ 0 ].trackEvents.length > 1 ) ? true : pollDone;
+  }
+} );
+
+atest( "Triggering filesdropped on track produces enough events", function ( assert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function pollReady () {
+    return ( ! frame._slideDriveReady ) ? pollReady : function () {
+      frame.butter.tracks[ 0 ].view.dispatch( "filesdropped", {
+        files: [ testSvg ],
+        track: frame.butter.tracks[ 0 ],
+        start: 5
+      } );
+      
+      return pollDone;
+    };
+  }
+  
+  function pollDone () {
+    return ( frame.butter.tracks[ 0 ].trackEvents.length >= 1 + testSvg_slideCount ) ? true : pollDone;
+  }
+});
+
+atest( "Triggering filesdropped on track with multiple files produces enough events",
+function ( assert, pass, toCleanUp ) {
+  var frame = getFramedWindow( "../template.html", toCleanUp );
+
+  return function pollReady () {
+    return ( ! frame._slideDriveReady ) ? pollReady : function () {
+      frame.butter.tracks[ 0 ].view.dispatch( "filesdropped", {
+        files: [ testSvg, testSvg ],
+        track: frame.butter.tracks[ 0 ],
+        start: 5
+      } );
+      
+      return pollDone;
+    };
+  }
+  
+  function pollDone () {
+    return ( frame.butter.tracks[ 0 ].trackEvents.length >= 1 + testSvg_slideCount + testSvg_slideCount ) ? true : pollDone;
+  }
+});
+
+/*\
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *  
+  atest( name, body( assert, pass, toCleanUp ) );                    *
+    Declares an test with the specifed name and body. It will be     *
+    run synconously with other tests defined syncronously with it.   *
+                                                                     *
+  runaTest( body( assert, pass, toCleanUp ) );                       *
+    Executes a test body and returns a promise of the result.        *
+                                                                     *
+  A test body can return true to pass, false to fail or a function   *
+  to continue to it asyncronously. This happens with a delay, so it  *
+  can be used to poll some state.                                    *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+\*/
+
+function reportPass ( ) {
+  var el = document.createElement( "div" );
+  el.className = "pass result";
+  el.textContent = [].slice.call( arguments ).join( " - " );
+
+  var label = document.createElement( "h3" );
+  label.textContent = "pass: " + this + " ";
+  el.insertBefore( label, el.firstChild );
+
+  document.getElementById( "results" ).appendChild( el );
+}
+
+function reportFail ( ) {
+  var el = document.createElement( "div" );
+  el.className = "fail result";
+  el.textContent = [].slice.call( arguments ).join( " - " );
+
+  var label = document.createElement( "h3" );
+  label.textContent = "fail: " + this + " ";
+  el.insertBefore( label, el.firstChild );
+
+  document.getElementById( "results" ).appendChild( el );
+}
+
+runaTest.timeout = 10000;
+runaTest.tickDelay = 100;
+atest.cooldown = 250;
+
+function atest ( name, body ) {
+  if ( !atest.buffer ) {
+    atest.buffer = [];
+    setTimeout( triggerTests, 0 );
+  }
+
+  atest.buffer.push( [ name, body ] );
+
+  function triggerTests () {
+    var buffer = atest.buffer,
+        i = 0;
+
+    delete atest.buffer;
+    triggerNext();
+
+    function triggerNext () {
+      if ( i < buffer.length ) {
+        var name = buffer[ i ][ 0 ],
+            body = buffer[ i ][ 1 ],
+            testRun = runaTest( body );
+
+        testRun.then(function () {
+          reportPass.apply( name, arguments );
+        }, function () {
+          reportFail.apply( name, arguments );
+        });
+
+        testRun.always(function () {
+          setTimeout( function () {
+            triggerNext.apply(  );
+          }, atest.cooldown );
+        });
+
+        ++i;
+      }
+    }
+  }
+}
+
+function runaTest ( body ) {
+  var result = new jQuery.Deferred,
+      tickInterval = setInterval( tick, runaTest.tickDelay ),
+      timeoutTimeout = setTimeout( result.reject, runaTest.timeout, "Timeout (" + runaTest.timeout + "ms)" ),
+      active = body;
+
+  return result.promise();
+
+  function assert ( condition, msg ) {
+    if ( !condition ) {
+      var failArgs = [ "Assertion failed" ].concat( [].slice.call( arguments, 1 ) );
+      result.reject.apply( result, failArgs ) ;
+    }
+  }
+
+  function tick () {
+    if ( result.state() === "pending" ) {
+      if ( typeof active === "function" ) {
+        try {
+          active = active.call( result, assert, result.resolve, result.always );
+        } catch ( ex ) {
+          result.reject( "Uncaught exception", ex );
+          console.error( ex.stack );
+        }
+      } else if ( active === true ) {
+        result.resolve();
+      } else if ( active === false ) {
+        result.reject();
+      }
+    } else {
+      clearInterval( tickInterval );
+    }
+  }
+}
+</script>
+<style>
+  body {
+    font-family: sans-serif;
+  }
+  #results {
+    margin: .125em;
+    padding: .125em;
+    border: .125em solid #444;
+    background: #EEE;
+  }
+
+  .result {
+    margin: .25em;
+    border: 1px solid #888;
+  }
+
+  .result.pass {
+    border-left: .25em solid green;
+    padding-left: .25em;
+    background: #EFE;
+  }
+
+  .result.fail {
+    border-left: .25em solid red;
+    padding-left: .25em;
+    background: #FDD;
+  }
+
+  #workingArea {
+    min-height: 1em;
+    max-height: 320px;
+    margin: 2em;
+    border: 1px dashed #D88;
+    background: white;
+    overflow: auto;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 100%;
+  }
+</style>
+</body></html>

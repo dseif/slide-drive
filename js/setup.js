@@ -173,11 +173,7 @@ addEventListener( "DOMContentLoaded", function() {
   function initMediaAndWait () {
     console.log( "Initializing media player and waiting for it to be ready." );
     
-    if ( fromButter ) {
-      popcorn = Popcorn.instances[0];
-    } else {
-      popcorn = Popcorn( "#audio", { frameAnimation: true });
-    }
+    popcorn = Popcorn( "#audio", { frameAnimation: true });
     
     window.popcorn = popcorn; // TODO remove this after debugging
     
@@ -225,7 +221,7 @@ addEventListener( "DOMContentLoaded", function() {
         // back into the DOM, which we'll parse them back out of.
         // This will need a bit more nuance when other Popcorn events can be added.
         
-        var pageScripts = root.querySelector( "script" ),
+        var pageScripts = root.querySelectorAll( "script" ),
             lastScript = pageScripts[ pageScripts.length - 1 ];
         
         lastScript.parentNode.removeChild( lastScript );
@@ -234,7 +230,7 @@ addEventListener( "DOMContentLoaded", function() {
       // Bind file drop handling to each Butter track.
       butter.media[ 0 ].listen( "trackadded" , function( e ) {
         var track = e.data;
-        track.view.listen( "filesdroped", function( e ) {
+        track.view.listen( "filesdropped", function( e ) {
           onDroppedFilesOnTrack( e.data.files, e.data.track, e.data.start );
         });
       })
@@ -261,6 +257,8 @@ addEventListener( "DOMContentLoaded", function() {
     
     initEvents();
     initTimelineTargets();
+    
+    window._slideDriveReady = true;
   }
   
   // Initialize keyboard shorcuts (disable Deck's if in Butter, else enable our own).
@@ -358,6 +356,7 @@ addEventListener( "DOMContentLoaded", function() {
      If they have been then unbind the drop handlers, read the file and continue to handleDroppedSVG.
   */  
   function onDroppedFilesOnTrack ( files, track, time ) {
+    console.log("DROPPED")
     var i, l, file, reader;
     
     for ( i = 0, l = files.length; i < l; ++i ) {
@@ -372,14 +371,14 @@ addEventListener( "DOMContentLoaded", function() {
       
       reader.readAsText(file, "UTF-8" );
       reader.onloadend = function () {
-        if (reader.readyState != FileReader.DONE) {
+        if (this.readyState != FileReader.DONE) {
           return;
         }
 
         var tmpContainer = document.createElement( "div" ),
             svgRoot;
         
-        tmpContainer.innerHTML = reader.result;
+        tmpContainer.innerHTML = this.result;
         svgRoot = tmpContainer.querySelector( "svg" );
 
         handleDroppedSVG(svgRoot, track, time);
