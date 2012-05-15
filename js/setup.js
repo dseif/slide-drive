@@ -38,8 +38,6 @@ addEventListener( "DOMContentLoaded", function() {
       return new SlideButterOptions( _el );
     }
     
-    console.log( _el );
-    
     $( _el ).data( "slidedrive.butteroptions", this );
     
     Object.defineProperties( this, {
@@ -356,7 +354,6 @@ addEventListener( "DOMContentLoaded", function() {
      If they have been then unbind the drop handlers, read the file and continue to handleDroppedSVG.
   */  
   function onDroppedFilesOnTrack ( files, track, time ) {
-    console.log("DROPPED")
     var i, l, file, reader;
     
     for ( i = 0, l = files.length; i < l; ++i ) {
@@ -553,8 +550,6 @@ addEventListener( "DOMContentLoaded", function() {
       
       var slideEl = document.createElement( "section" ),
           transEl = document.createElement( "div" );
-      
-      console.log("adding slide " + svgSlideId);
       
       slideEl.setAttribute( "class", "slide" );
       slideEl.setAttribute( "data-popcorn-slideshow", start + i * 1 ); // TODO better start times
