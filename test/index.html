@@ -2,8 +2,8 @@
   <meta charset="utf-8" />
   <title>Slide Drive Tests</title>  
 </head><body>
-  <ul id="results"></ul>
   <div id="workingArea"></div>
+  <ul id="results"></ul>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="../external/jquery/jquery-1.7.min.js"><\/script>')</script>
@@ -11,7 +11,7 @@
 <script>
 "use strict";
 
-var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
+var tests = atest( "Slide Drive Tests", 600, function ( toCleanUp ) {
   function getFramedWindow ( path, toCleanUp ) {
     var el = document.createElement( "iframe" );
     el.src = path;
@@ -36,8 +36,8 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
   var testSvg = getAsBlob( "test-presentation.svg", "image/svg+xml" ),
       testSvg_slideCount = 9;
   
-  atest( "../index.html", function ( assert, pass, toCleanUp ) {
-    atest( "Popcorn, jQuery and Deck.js initialized.", function ( assert, pass, toCleanUp ) {
+  atest( "../index.html", 120, function ( toCleanUp ) {
+    atest( "Popcorn, jQuery and Deck.js initialized.", 5, function ( toCleanUp ) {
       var frame = getFramedWindow( "../index.html", toCleanUp );
 
       return function poll () {
@@ -45,7 +45,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
     } );
 
-    atest( "Popcorn instance exposed on window (for testing).", function ( assert, pass, toCleanUp ) {
+    atest( "Popcorn instance exposed on window (for testing).", function ( toCleanUp ) {
       var frame = getFramedWindow( "../index.html", toCleanUp );
 
       return function poll () {
@@ -53,7 +53,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
     } );
 
-    atest( "_slideDriveReady is set (for testing).", function ( assert, pass, toCleanUp ) {
+    atest( "_slideDriveReady is set (for testing).", function ( toCleanUp ) {
       var frame = getFramedWindow( "../index.html", toCleanUp );
 
       return function poll () {
@@ -61,7 +61,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
     } );
 
-    atest( "Moving in Deck must move in Popcorn.", function ( assert, pass, toCleanUp ) {
+    atest( "Moving in Deck must move in Popcorn.", function ( toCleanUp ) {
       var frame = getFramedWindow( "../index.html", toCleanUp );
 
       return function poll () {
@@ -71,7 +71,8 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       function onReady () {
         var previousTime = frame.popcorn.currentTime();
         frame.jQuery.deck( "next" );
-        assert( frame.popcorn.currentTime() > previousTime, "Advancing Deck.js must instantly advance Popcorn." );   
+        
+        atest( "Popcorn is advanced when Deck.js is advanced", frame.popcorn.currentTime() > previousTime  );
     
         return afterMove;
       }
@@ -79,13 +80,13 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       function afterMove () {
         var previousTime = frame.popcorn.currentTime();
         frame.jQuery.deck( "prev" );
-        assert( frame.popcorn.currentTime() < previousTime, "Going back in Deck.js must instantly go back in Popcorn." );   
+        atest( "Going back in Deck.js must instantly go back in Popcorn.", frame.popcorn.currentTime() < previousTime );
     
         return true;
       }
     } );
 
-    atest( "Transcript must correspond to current slide", function ( assert, pass, toCleanUp ) {
+    atest( "Transcript must correspond to current slide", function ( toCleanUp ) {
       var frame = getFramedWindow( "../index.html", toCleanUp );
 
       return function poll () {
@@ -94,17 +95,17 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
 
       function onReady () {
         frame.jQuery.deck( "go", 0 );
-        assert( /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ),
-                "After going to slide 0, transcript must contain 'a quick introduction'." );
+        atest( "After going to slide 0, transcript must contain 'a quick introduction'.",
+                /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
         frame.jQuery.deck( "go", 1 );
-        assert( ! /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ),
-                "After going to slide 1, transcript must not contain 'a quick introduction'." );
-        assert( /to help scientists/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ),
-                "After going to slide 1, transcript must contain 'to help scientists'." );
+        atest( "After going to slide 1, transcript must not contain 'a quick introduction'.",
+               ! /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
+        atest( "After going to slide 1, transcript must contain 'to help scientists'.",
+               /to help scientists/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
       }
     } );
 
-    atest( "Anchor links must be respected", function ( assert, pass, toCleanUp ) {
+    atest( "Anchor links must be respected", function ( toCleanUp ) {
       var frame = getFramedWindow( "../index.html#slide-1", toCleanUp );
 
       return function poll () {
@@ -112,14 +113,14 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
 
       function onReady () {
-        assert( /to help scientists/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ),
-                "After loading presentation, transcript must contain 'to help scientists'." );
+        atest( "After loading presentation, transcript must contain 'to help scientists'.",
+               /to help scientists/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
       }
     } );
   } );
 
-  atest( "./template.html", function ( assert, pass, toCleanUp ) {
-    atest( "Popcorn, Butter, jQuery and Deck.js initialized.", function ( assert, pass, toCleanUp ) {
+  atest( "./template.html", 120, function ( toCleanUp ) {
+    atest( "Popcorn, Butter, jQuery and Deck.js initialized.", 5, function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function poll () {
@@ -127,7 +128,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
     } );
 
-    atest( "Popcorn and Butter instances exposed on window (for testing).", function ( assert, pass, toCleanUp ) {
+    atest( "Popcorn and Butter instances exposed on window (for testing).", function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function poll () {
@@ -135,7 +136,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
     } );
 
-    atest( "_slideDriveReady is set (for testing).", function ( assert, pass, toCleanUp ) {
+    atest( "_slideDriveReady is set (for testing).", function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function poll () {
@@ -143,7 +144,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
     } );
 
-    atest( "Playing advances > 2.75 seconds in 3 seconds.", function ( assert, pass, toCleanUp ) {
+    atest( "Playing advances > 2.75 seconds in 3 seconds.", function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady () {
@@ -157,14 +158,16 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
         return function pollAdvancement () {
           var delta = (new Date - start);
 
-          assert( delta < 3750, "three seconds must not pass" );
-
-          return ( frame.popcorn.currentTime() >= 2.75 ) ? true : pollAdvancement;
+          return ( delta > 3000 )
+                 ? false
+                 : ( frame.popcorn.currentTime() >= 2.75 )
+                   ? true
+                   : pollAdvancement;
         };
       }
     } );
 
-    atest( "Exported HTML doesn't include rendered MediaElement controls.", function ( assert, pass, toCleanUp ) {
+    atest( "Exported HTML doesn't include rendered MediaElement controls.", function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady () {
@@ -174,13 +177,11 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       function onReady () {
         var html = frame.butter.page.getHTML();
 
-        assert( ! /mejs-/.test( html ), "HTML must not contain MediaElement controls (\"mejs-\")." );
-
-        pass();
+        atest( "HTML must not contain MediaElement controls (\"mejs-\").", ! /mejs-/.test( html ) );
       }
     } );
 
-    atest( "Triggering filesdropped on track produces any new events.", function ( asssert, pass, toCleanUp ) {
+    atest( "Triggering filesdropped on track produces any new events.", function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady () {
@@ -200,7 +201,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
       }
     } );
 
-    atest( "Triggering filesdropped on track produces enough events.", function ( assert, pass, toCleanUp ) {
+    atest( "Triggering filesdropped on track produces enough events.", function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady () {
@@ -221,7 +222,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
     } );
 
     atest( "Triggering filesdropped on track with multiple files produces enough events.",
-    function ( assert, pass, toCleanUp ) {
+    function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady () {
@@ -242,7 +243,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
     } );
 
     atest( "Reordering events should reorder corresponding DOM elements",
-    function ( assert, pass, toCleanUp ) {
+    function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady () {
@@ -266,14 +267,14 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
             firstElement = frame.document.getElementById( events[ 0 ].popcornOptions.slideId ),
             secondElement = frame.document.getElementById( events[ 1 ].popcornOptions.slideId )
     
-        assert( firstElement.compareDocumentPosition(secondElement) === firstElement.DOCUMENT_POSITION_FOLLOWING,
-                "Elements must be in correct order before reordering." );
+        atest( "Elements must be in correct order before reordering.",
+               firstElement.compareDocumentPosition(secondElement) === firstElement.DOCUMENT_POSITION_FOLLOWING);
     
         events[ 0 ].popcornOptions.start = 1;
         events[ 1 ].popcornOptions.start = 0;
     
-        assert( firstElement.compareDocumentPosition(secondElement) === firstElement.DOCUMENT_POSITION_PRECEDING,
-                "Elements must be in correct order after reordering." );
+        atest( "Elements must be in correct order after reordering.",
+               firstElement.compareDocumentPosition(secondElement) === firstElement.DOCUMENT_POSITION_PRECEDING);
     
         return true;
       }
@@ -282,7 +283,7 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
     // case "SKIP":
 
     atest( "Event time changes must be reflected in corresponding DOM elements",
-    function ( assert, pass, toCleanUp ) {
+    function ( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady () {
@@ -295,8 +296,8 @@ var tests = atest( "Slide Drive Tests", function ( assert, pass, toCleanUp ) {
     
         for ( var i = 0; i < 5; i++ ) {
           events[ 0 ].popcornOptions.start = i;
-          assert( String( i ) === el.getAttribute( "data-popcorn-slideshow" ),
-                  "data-popcorn-slideshow must reflect value of .start, " + i );
+          atest( "data-popcorn-slideshow must reflect value of .start, " + i,
+                  String( i ) === el.getAttribute( "data-popcorn-slideshow" ) );
         }
     
         return true;
@@ -311,22 +312,27 @@ document.getElementById( "results" ).appendChild( tests.report );
 <style>
   body {
     font-family: sans-serif;
+    margin-bottom: 8em;
   }
   
   ul {
     margin: 0;
-    padding: .25em .5em;
+    padding: 0;
+  }
+  
+  ul ul {
+    font-size: 90%;
   }
   
   li {
     list-style-type: none;
     padding: .125em;
     background: #FFE;
-    padding-left: .5em;
+    padding: .25em .5em;
+    margin: .25em;
     
     border: 2px outset #BBB;
     border-left: .25em solid #FF8;
-    margin: .25em;
   }
   
   li.pass {
@@ -339,17 +345,29 @@ document.getElementById( "results" ).appendChild( tests.report );
     background: #FEE;
   }
   
+  li.running {
+    border-left: .25em solid orange;
+    background: #FFB;
+  }
+  
+  li.pending {
+    opacity: 0.5;
+  }
+  
   .label {
     font-weight: bold;
   }
 
   #workingArea {
-    min-height: 1em;
-    max-height: 320px;
+    height: 320px;
     margin: 2em;
     border: 1px dashed #D88;
     background: white;
     overflow: auto;
+  }
+  
+  #results {
+    margin: 1em 2em;
   }
 </style>
 </body></html>
