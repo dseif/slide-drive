@@ -1,6 +1,6 @@
 Slide-drive
 ===========
-[Slide-drive](https://github.com/dseif/slide-drive) is a HTML5 slideshow player that enables audio or video to control a [Deck.js](http://imakewebthings.github.com/deck.js/) slideshow. The author needs nothing more than a basic understanding of HTML and CSS to make a fully featured slideshow.
+[Slide-drive][slide-drive] is a HTML5 slideshow player that enables audio or video to control a [Deck.js][deck.js] slideshow. The author needs nothing more than a basic understanding of HTML and CSS to make a fully featured slideshow.
 
 Getting Started
 ---------------
@@ -20,9 +20,7 @@ Getting Started
 
 ### Setup Node.js and its modules
 
-Butter requires Node.js v0.6 or higher. You may use your system's copy, but I prefer to install an isolated copy using the Python tool [nodeenv][nodeenv]. This takes longer to install but is more difficult to break.
-
- [nodeenv]: http://ekalinin.github.com/nodeenv/
+Butter requires [Node.js][node.js] v0.6 or higher. You may use your system's copy, but I prefer to install an isolated copy using the Python tool [nodeenv][nodeenv]. This takes longer to install but is more difficult to break.
 
 #### Install it using you Python package manager of choice
 
@@ -41,11 +39,9 @@ Butter requires Node.js v0.6 or higher. You may use your system's copy, but I pr
 
 ### Install and Run MongoDB
 
-Basic functionality doesn't require Mongo, but it is required to save or share pages. [You're on your own for installing this.][monogodb]
+Some basic functionality doesn't require [MongoDB][mongodb], but it is required to save or share pages. You're on your own for installing this.
 
     $ screen -d -m mongod
-
- [mongodb]: http://www.mongodb.org/
 
 ### Start the Butter/Cornfield server
 
@@ -53,7 +49,13 @@ Basic functionality doesn't require Mongo, but it is required to save or share p
 
 ### Open it!
 
-Load <http://localhost:8888/template.html> to view the Slide Drive template for Butter, or <http://localhost:8888/> to see a Slide Drive presentation.
+Load <http://localhost:8888/template.html> to view the Slide Drive template for Butter, or <http://localhost:8888/> to see an example Slide Drive presentation.
+
+ [slide-drive]: https://github.com/jeremybanks/slide-drive
+ [deck.js]: http://imakewebthings.com/deck.js/
+ [node.js]: http://nodejs.org/
+ [nodeenv]: http://ekalinin.github.com/nodeenv/
+ [mongodb]: http://www.mongodb.org/
 
 Keyboard commands
 -----------------
@@ -63,4 +65,3 @@ Keyboard commands
 * previous slide: backspace, left arrow, down arrow
 * show slide menu: m
 * go to slide: g
-
