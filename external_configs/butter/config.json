@@ -2,8 +2,8 @@
   "name": "slide-drive-butter",
   "snapshotHTMLOnReady": false,
   "editor": {
-    "default": "../editors/default-editor.html",
-    "slidedrive": "js/custom-editors/slidedrive-editor.html"
+    "default": "/external/butter/editors/default-editor.html",
+    "slidedrive": "/js/custom-editors/slidedrive-editor.html"
   },
   "cornfield": {
     "server": "http://localhost:8888",
@@ -18,7 +18,7 @@
       {
         "name": "Slide Drive",
         "type": "slidedrive",
-        "path": "js/custom-plugins/plugin.slidedrive.js"
+        "path": "/js/custom-plugins/plugin.slidedrive.js"
       }
     ],
     "defaults": [
@@ -32,18 +32,18 @@
     "image": "image-icon.png"
   },
   "dirs": {
-    "popcorn-js": "../external/popcorn-js/",
-    "css": "../css/",
-    "dialogs": "../dialogs/",
-    "resources": "../resources/"
+    "popcorn-js": "/external/butter/external/popcorn-js/",
+    "css": "/external/butter/css/",
+    "dialogs": "/external/butter/dialogs/",
+    "resources": "/external/butter/resources/"
   },
   "mediaDefaults": {
     "frameAnimation": true
   },
   "popcorn": {
     "scripts": {
-      "beforeEvents": "../external/popcorn-js/modules/parser/popcorn.parser.js",
-      "afterEvents": "../external/popcorn-js/parsers/parserJSON/popcorn.parserJSON.js"
+      "beforeEvents": "/external/butter/external/popcorn-js/modules/parser/popcorn.parser.js",
+      "afterEvents": "/external/butter/external/popcorn-js/parsers/parserJSON/popcorn.parserJSON.js"
     }
   }
 }
