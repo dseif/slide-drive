@@ -41,10 +41,7 @@
     "frameAnimation": true
   },
   "popcorn": {
-    "scripts": {
-      "beforeEvents": "/external/butter/external/popcorn-js/modules/parser/popcorn.parser.js",
-      "afterEvents": "/external/butter/external/popcorn-js/parsers/parserJSON/popcorn.parserJSON.js"
-    }
+    "scripts": []
   }
 }
 
