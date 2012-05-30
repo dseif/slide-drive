@@ -1,0 +1,6 @@
+[submodule "external/popcornjs"]
+	path = external/popcornjs
+	url = https://github.com/mozilla/popcorn-js.git
+[submodule "external/butter"]
+	path = external/butter
+	url = https://github.com/mozilla/butter.git
