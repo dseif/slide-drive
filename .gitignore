@@ -7,3 +7,10 @@
 
 # LibreOffice
 .~*#
+
+# nodeenv
+nodeenv/
+node_modules/
+
+# cornfield
+view/
