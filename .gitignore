@@ -4,3 +4,10 @@
 
 # vim
 *~
+
+# nodeenv
+nodeenv/
+node_modules/
+
+# cornfield
+view/
