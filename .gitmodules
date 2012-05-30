@@ -3,4 +3,4 @@
 	url = https://github.com/mozilla/popcorn-js.git
 [submodule "external/butter"]
 	path = external/butter
-	url = https://github.com/mozilla/butter.git
+	url = https://github.com/jeremybanks/butter.git
