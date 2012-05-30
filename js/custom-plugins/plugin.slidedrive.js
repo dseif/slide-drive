@@ -28,7 +28,7 @@
             type: "text",
             label: "Transcript (HTML)"
           },
-          target: "audio",
+          target: "audio"
         }
       },
       _setup: function( options ) {

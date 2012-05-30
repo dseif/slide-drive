@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>
+      jQuery.extend({
+        // Returns a new <form> element pointed at the specified URL and method,
+        // populated with hidden elements containing the specified data.
+        form: function( url, data, method ) {
+          if (method == null) method = 'POST';
+          if (data == null) data = {};
+
+          var form = document.createElement( "form" );
+          form.method = method;
+          form.action = url;
+          form.style.display = "none";
+
+          var addData = function(name, data) {
+            if ($.isArray(data)) {
+              for (var i = 0; i < data.length; i++) {
+                var value = data[i];
+                addData(name + '[]', value);
+              }
+            } else if (typeof data === 'object') {
+              for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                  addData(name + '[' + key + ']', data[key]);
+                }
+              }
+            } else if (data != null) {
+              var el = document.createElement( "input" );
+              el.type = "hidden";
+              el.name = String( name );
+              el.value = String( data );
+              form.appendChild( el );
+            }
+          };
+
+          for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+              addData(key, data[key]);
+            }
+          }
+
+          return form;
+        },
+
+        // Loads the specified URL in an iframe and returns a Promise of the first
+        // message the frame posts to our window, after which it will be destroyed.        
+        getMessage: function( url, data, method ) {
+          var result = new jQuery.Deferred,
+              frame = document.createElement( "iframe" );
+          frame.style.display = "none";
+          
+          window.addEventListener( "message", onMessage, false );
+          document.body.appendChild( frame );
+          
+          method = method ? method.toUpperCase() : (data) ? "POST" : "GET";
+          
+          if ( method === "GET" ) {
+            if ( data ) {
+              var strData = ( typeof data === "string") ? data : $.param( data );
+              url += (/?/.test(url) ? "&" : "?") + strData;
+            }
+            frame.src = url;
+          } else {
+            frame.src = "about:blank";
+            var form = $.form( url, data, method );
+            frame.contentDocument.body.appendChild( form );
+            form.submit();
+          }
+          
+          return result.promise();
+          
+          function onMessage ( e ) {
+            if ( e.source !== frame.contentWindow ) return;
+            
+            result.resolve( e.data );
+            document.body.removeChild( frame );
+          }
+        }
+      });
+      
+      $.getMessage( "svgembeddedfonts.svg", {"foo": "bar"} ).then(function( x ) {
+        console.log( x.svgFontsSupported```` );
+      })
+    </script>
+  </body>
+</html>

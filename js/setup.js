@@ -222,7 +222,7 @@ addEventListener( "DOMContentLoaded", function() {
         var pageScripts = root.querySelectorAll( "script" ),
             lastScript = pageScripts[ pageScripts.length - 1 ];
         
-        lastScript.parentNode.removeChild( lastScript );
+        // lastScript.parentNode.removeChild( lastScript );
       });
       
       // Bind file drop handling to each Butter track.
@@ -452,6 +452,53 @@ addEventListener( "DOMContentLoaded", function() {
       for ( var i = 0; i < el.childNodes.length; ++i ) {
         stripWhitespaceNodes( el.childNodes[ i ] );
       }
+    }
+  }
+  
+  function makeFontEmbedder ( root ) {
+    var fontEls = $.map( root.querySelectorAll( "font-face" ), function( el ) {
+      el.cloneNode( true );
+    }),
+        fonts = {},
+        i, l;
+    
+    for ( i = 0, l = fontEls.length; i < l; ++i ) {
+      var fontEl = fontEls[ i ],
+          key = fontKey( fontEl.getAttribute( "font-family" ),
+                         fontEl.getAttribute( "font-weight" ),
+                         fontEl.getAttribute( "font-style" ) ),
+          unitsPerEm = +(fontEl.getAttribute( "units-per-em" ) || 1000),
+          glyphEls = fontEl.querySelectorAll( "glyph" ),
+          font = fonts[ key ],
+          j, m;
+      
+      if ( !font ) {
+        fonts[ key ] = font = {};
+      }
+      
+      for ( j = 0, m = glyphEls.length; j < m; ++j ) {
+        font[ glyphEls[ i ].getAttribute( "unicode" ) ] = glyphEls[ i ].getAttribute( "d" );
+      }
+    }
+    
+    return embedFonts;
+    
+    function fontKey ( family, weight, style ) {
+      return family + "\n" + (weight || "normal") + "\n" + (style || "normal");
+    }
+    
+    function embedFonts ( el ) {
+      var family = el.style.fontFamily,
+          weight = el.style.fontWeight,
+          style = el.style.fontStyle,
+          key = fontKey( family, weigh, style )
+          emSize = el.style.fontSize,
+          emSizeUnitless,
+          dummySizeEl = document.createElementNS( "http://www.w3.org/2000/svg", "g" ),
+          text = el.textContent;
+      
+      dummySizeEl.style.height = emSize;
+      dummySizeEl.height
     }
   }
   

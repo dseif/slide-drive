@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.2" baseProfile="tiny" viewBox="0 0 4096 4096" xmlns="http://www.w3.org/2000/svg" clip-path="url(#clip_path)" width="256" height="256">
+  <defs>
+    <clipPath id="clip_path" clipPathUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="4096" height="4096"/>
+    </clipPath>
+    <font id="phony_font_1" horiz-adv-x="2048">
+      <font-face font-family="Phony Font576351317" units-per-em="2048" />
+      <glyph unicode="i" horiz-adv-x="4096" d="M 0 0 L 4096 2048 L 0 2048 L 0 0 z" />
+      <glyph unicode="M" horiz-adv-x="1024" d="M 0 0 L 1024 2048 L 0 2048 L 0 0 z" />
+    </font>
+  </defs>
+  <g font-family="Phony Font576351317" fill="black" font-size="1024">
+    <text id="font_i" x="0" y="2048">i</text>
+    <text id="font_M" x="0" y="4096">M</text>
+  </g>
+  <g transform="translate(2048, 1024)">
+    <path id="path_i" d="M 0 0 L 2048 1024 L 0 1024 L 0 0 z" />
+  </g>
+  <g transform="translate(2048, 3072)">
+    <path id="path_M" d="M 0 0 L  512 1024 L 0 1024 L 0 0 z" />
+  </g>
+  <script><![CDATA[
+    var e = function( id ) { return document.getElementById( id ); };
+    var svgFontsSupported =
+      e("font_i").getBBox().width == e("path_i").getBBox().width &&
+      e("font_M").getBBox().width == e("path_M").getBBox().width &&
+      e("font_i").getBBox().width > e("font_M").getBBox().width;
+    
+    window.addEventListener("message", function ( e ) {
+      if ( e.source !== window ) return;
+      console.log(e)
+      alert( "result = " + JSON.stringify( e.data, null, 2 ) +
+             "\n\n(Would be postMessaged to parent if framed.)" );
+    } );
+    window.parent.postMessage( { svgFontsSupported: svgFontsSupported }, "*" );
+  ]]></script>
+</svg>
