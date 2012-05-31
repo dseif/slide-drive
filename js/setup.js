@@ -294,8 +294,11 @@ addEventListener( "DOMContentLoaded", function() {
       
       document.addEventListener( "keydown", function( e ) {
         if ( e.keyCode === 80 ) {
-          var elem = document.getElementById( "audio" );
-          !elem.paused ? elem.pause() : elem.play();
+          if ( !popcorn.paused() ) {
+            popcorn.pause();
+          } else {
+            popcorn.play();
+          }
         } else if( e.keyCode === 84 ) {
           if( !printableElement ) {
             printableElement = initPrintable();
@@ -320,21 +323,22 @@ addEventListener( "DOMContentLoaded", function() {
       resizeTranscript();
     } );
     
-    $(document).bind('deck.change', function(event, from, to) {
+    $(document).bind( "deck.change", function( event, from, to ) {
       if ( from === to ) {
         return;
       }
-      
+
       var container = document.querySelector( ".deck-container" ),
           slide = document.querySelectorAll( ".slide" )[ to ],
+          outerSlide = slide,
           parentSlides = $( slide ).parents( ".slide" );
       
       // Size should be based on height of the current master slide, not sub-slide.
       if (parentSlides.length) {
-        slide = parentSlides[ parentSlides.length - 1 ];
+        outerSlide = parentSlides[ parentSlides.length - 1 ];
       }
 
-      if( slide.offsetHeight > container.offsetHeight) {
+      if( outerSlide.offsetHeight > container.offsetHeight) {
         container.style.overflowY = "auto";
       } else {
         container.style.overflow = "hidden";
@@ -342,7 +346,7 @@ addEventListener( "DOMContentLoaded", function() {
       
       var toSlide = SlideButterOptions( slide );
       
-      popcorn.currentTime( toSlide.start );
+      popcorn.currentTime( toSlide.start + 0.0001 );
     });
     
   }
