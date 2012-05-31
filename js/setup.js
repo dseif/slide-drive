@@ -6,7 +6,8 @@ addEventListener( "DOMContentLoaded", function() {
       inButter         = !!window.Butter,
       butter           = null,
       fromButter       = !inButter && document.querySelector( "body" ).hasAttribute( "data-butter-crufted" ),
-      popcorn          = null;
+      popcorn          = null,
+      anchorTargetId   = null;
   
   init();
   
@@ -153,6 +154,10 @@ addEventListener( "DOMContentLoaded", function() {
       
     }
     
+    if ( window.location.hash > "#" ) {
+      anchorTargetId = window.location.hash.substr( 1 );
+    }
+    
     if ( inButter ) {
       Butter({
         config: "/external_configs/butter/config.json",
@@ -255,6 +260,10 @@ addEventListener( "DOMContentLoaded", function() {
     
     initEvents();
     initTimelineTargets();
+    
+    if ( anchorTargetId != null ) {
+      $.deck( "go", anchorTargetId);
+    }
     
     window._slideDriveReady = true;
   }

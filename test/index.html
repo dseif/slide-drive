@@ -95,9 +95,18 @@ var tests = atest( "Slide Drive Tests", 600, function ( toCleanUp ) {
 
       function onReady () {
         frame.jQuery.deck( "go", 0 );
+        return afterGoingToSlide0;
+      }
+      
+      function afterGoingToSlide0 () {
         atest( "After going to slide 0, transcript must contain 'a quick introduction'.",
                 /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
+
         frame.jQuery.deck( "go", 1 );
+        return afterGoingToSlide1;
+      }
+      
+      function afterGoingToSlide1 () {
         atest( "After going to slide 1, transcript must not contain 'a quick introduction'.",
                ! /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
         atest( "After going to slide 1, transcript must contain 'to help scientists'.",
