@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Software Carpentry in 90 Seconds</title>
+  
+  <!-- Core and extension CSS files -->
+  <link rel="stylesheet" href="/external/deckjs/core/deck.core.css">
+  <link rel="stylesheet" href="/external/deckjs/extensions/goto/deck.goto.css">
+  <link rel="stylesheet" href="/external/deckjs/extensions/menu/deck.menu.css">
+  <link rel="stylesheet" href="/external/deckjs/extensions/navigation/deck.navigation.css">
+  <link rel="stylesheet" href="/external/deckjs/extensions/status/deck.status.css">
+  <!-- <link rel="stylesheet" href="external/deckjs/extensions/hash/deck.hash.css"> -->
+
+  <!-- Theme CSS files (menu swaps these out) -->
+  <link rel="stylesheet" href="/external/deckjs/themes/style/swiss.css">
+  <link rel="stylesheet" href="/external/deckjs/themes/transition/fade.css">
+
+  <!-- Custom CSS just for this page -->
+  <link rel="stylesheet" href="/css/slideshow.css">
+  <link rel="stylesheet" href="/external/butter/css/butter.ui.css" data-butter-exclude />
+	
+  <script src="/external/modernizr/modernizr.custom.js"></script>
+  <!-- project-container class determines the size of the container.
+       This contains the slideshow, media element, and transcript
+       deck-container will override height set by deckjs to whatever you desire
+  -->
+  
+  <script src="https://browserid.org/include.js" type="text/javascript" data-butter-exclude></script>
+  <script src="/external/butter/src/butter.js" data-butter-exclude /></script>
+  
+  <style>
+    .project-container {
+      width: 100%;
+      height: 100%;
+      border-style:solid;
+      border-width: 1px;
+      border-color: black;
+    }
+    .deck-container {
+      height: 80%;
+    }
+    
+    body {
+      margin: 0 0 0 0 !important;
+    }
+  </style>
+  
+  <style data-butter-exclude>
+    html {
+      padding-top: 35px;
+      padding-bottom: 210px;
+    }
+    
+    .butter-media-properties {
+      top: 35px !important;
+    }
+  </style>
+</head>
+
+<body class="project-container" data-butter-crufted>
+  <div id="main" style="height:100%;width:100%;">
+    <div class="deck-container">
+      <section class="slide" data-popcorn-slideshow="0">
+        <div class="transcript">
+          <p>This is a Butter template for creating Slide Drive presentations.</p>
+          <p>Export a LibreOffice presentation as SVG and drag the exported document to this window to import the slides.</p>
+        </div>
+
+        <div align="center">
+           <h2>Slide Drive Butter Template</h2>
+
+           <p>
+            Export a LibreOffice presentation as SVG and drag the SVG document to this window to import its slides.
+           </p>
+        </div>
+      </section>
+
+      <p class="deck-status">
+        <span class="deck-status-current">1</span>
+        /
+        <span class="deck-status-total">12</span>
+      </p>
+      <form action="." method="get" class="goto-form">
+        <label for="goto-slide">Go to slide:</label>
+        <input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+        <datalist id="goto-datalist"></datalist>
+        <input type="submit" value="Go">
+      </form>
+
+      <a href="#" class="deck-prev-link deck-nav-disabled" title="Previous">←</a>
+      <a href="#bugs" class="deck-next-link" title="Next">→</a>
+        
+    </div>
+
+    <audio id="audio" data-butter="media" controls preload="auto" style="display:none;width:100%;">
+      <source src="/media/pitch.ogg"/>
+      <source src="/media/pitch.mp3"/>
+    </audio>
+
+    <div id="slideshow-transcript" data-butter="target" class="popcorn-transcript"></div>
+
+    <!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
+  </div>
+  <div id="printable" class="deck-container printable-body" style="display:none;">
+  </div>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="external/jquery/jquery-1.7.min.js"><\/script>')</script>
+      
+    <script src="/external/mediaelement/build/mediaelement-and-player.min.js"></script>
+    <link rel="stylesheet" href="/external/mediaelement/build/mediaelementplayer.css" />
+
+      <!-- Deck Core and extensions -->
+      <script src="/js/jquery.svgclassmethods.js"></script>
+      <script src="/external/deckjs/core/deck.core.js"></script>
+      <!-- <script src="external/deckjs/extensions/hash/deck.hash.js"></script> -->
+      <script src="/external/deckjs/extensions/menu/deck.menu.js"></script>
+      <script src="/external/deckjs/extensions/goto/deck.goto.js"></script>
+      <script src="/external/deckjs/extensions/status/deck.status.js"></script>
+      <script src="/external/deckjs/extensions/navigation/deck.navigation.js"></script>
+
+      <!-- Specific to this page -->
+      <script src="/js/setup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "name": "slide-drive-butter",
+  "snapshotHTMLOnReady": false,
+  "editor": {
+    "default": "/external/butter/editors/default-editor.html",
+    "slidedrive": "/js/custom-editors/slidedrive-editor.html"
+  },
+  "cornfield": {
+    "server": "http://localhost:8888",
+    "authtype": "browserid"
+  },
+  "ui": {
+    "trackEventHighlight": "click",
+    "title": "Butter <sup style=\"text-decoration: underline;\">0.3</sup>"
+  },
+  "plugin": {
+    "plugins": [
+      {
+        "name": "Slide Drive",
+        "type": "slidedrive",
+        "path": "/js/custom-plugins/plugin.slidedrive.js"
+      }
+    ],
+    "defaults": [
+      "slidedrive"
+    ]
+  },
+  "modules": [
+  ],
+  "icons": {
+    "default": "popcorn-icon.png",
+    "image": "image-icon.png"
+  },
+  "dirs": {
+    "popcorn-js": "/external/butter/external/popcorn-js/",
+    "css": "/external/butter/css/",
+    "dialogs": "/external/butter/dialogs/",
+    "resources": "/external/butter/resources/"
+  },
+  "mediaDefaults": {
+    "frameAnimation": true
+  },
+  "popcorn": {
+    "scripts": []
+  }
+}
+
