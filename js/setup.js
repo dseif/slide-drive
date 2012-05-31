@@ -260,12 +260,13 @@ addEventListener( "DOMContentLoaded", function() {
     
     initEvents();
     initTimelineTargets();
+    resizeTranscript();
     
     if ( anchorTargetId != null ) {
       $.deck( "go", anchorTargetId);
     }
     
-    window._slideDriveReady = true;
+    window._slideDriveReady = true; // required for tests
   }
   
   // Initialize keyboard shorcuts (disable Deck's if in Butter, else enable our own).
@@ -293,8 +294,11 @@ addEventListener( "DOMContentLoaded", function() {
       
       document.addEventListener( "keydown", function( e ) {
         if ( e.keyCode === 80 ) {
-          var elem = document.getElementById( "audio" );
-          !elem.paused ? elem.pause() : elem.play();
+          if ( !popcorn.paused() ) {
+            popcorn.pause();
+          } else {
+            popcorn.play();
+          }
         } else if( e.keyCode === 84 ) {
           if( !printableElement ) {
             printableElement = initPrintable();
@@ -319,21 +323,22 @@ addEventListener( "DOMContentLoaded", function() {
       resizeTranscript();
     } );
     
-    $(document).bind('deck.change', function(event, from, to) {
+    $(document).bind( "deck.change", function( event, from, to ) {
       if ( from === to ) {
         return;
       }
-      
+
       var container = document.querySelector( ".deck-container" ),
           slide = document.querySelectorAll( ".slide" )[ to ],
+          outerSlide = slide,
           parentSlides = $( slide ).parents( ".slide" );
       
       // Size should be based on height of the current master slide, not sub-slide.
       if (parentSlides.length) {
-        slide = parentSlides[ parentSlides.length - 1 ];
+        outerSlide = parentSlides[ parentSlides.length - 1 ];
       }
 
-      if( slide.offsetHeight > container.offsetHeight) {
+      if( outerSlide.offsetHeight > container.offsetHeight) {
         container.style.overflowY = "auto";
       } else {
         container.style.overflow = "hidden";
@@ -713,15 +718,15 @@ addEventListener( "DOMContentLoaded", function() {
         var teDiv = document.createElement( "span" ),
             spacer = document.createElement( "span" ),
             slides = document.querySelectorAll( ".slide" ),
-            lastSlideOptions = SlideButterOptions( slides[ times ] ),
-            endTime = ( times + 1 ) > slides.length - 1 ? lastSlideOptions.start: lastSlideOptions.start,
+            currentSlideOptions = SlideButterOptions( slides[ times ] ),
+            endTime = ( times + 1 ) > slides.length - 1 ? popcorn.duration(): SlideButterOptions( slides[ times + 1] ).start,
             recurse = false;
 
 
         if( innerContainer.children.length === 0 ) {
           innerContainer.appendChild( teDiv );
           innerContainer.appendChild( spacer );
-          teDiv.style.width = ( pixelsPerSecond * lastSlideOptions.start ) / ( container.offsetWidth / 100 ) + "%";
+          teDiv.style.width = ( pixelsPerSecond * currentSlideOptions.start ) / ( container.offsetWidth / 100 ) + "%";
           teDiv.id = "popcorn-slideshow-div-startPadding";
           recurse = true;
         } else {
@@ -729,9 +734,9 @@ addEventListener( "DOMContentLoaded", function() {
           innerContainer.appendChild( spacer );
           // such a gross block of code, must fix this
           if( userAgent[ userAgent.length - 1 ].split( "/" )[ 0 ] === "Firefox" ) {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - lastSlideOptions.start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - currentSlideOptions.start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
           } else {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - lastSlideOptions.start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - currentSlideOptions.start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
           }
           teDiv.id = "popcorn-slideshow-div-" + count;
         }
