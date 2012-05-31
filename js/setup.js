@@ -260,6 +260,7 @@ addEventListener( "DOMContentLoaded", function() {
     
     initEvents();
     initTimelineTargets();
+    resizeTranscript();
     
     if ( anchorTargetId != null ) {
       $.deck( "go", anchorTargetId);
