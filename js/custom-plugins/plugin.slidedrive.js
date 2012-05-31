@@ -1,13 +1,13 @@
 (function ( Popcorn ) {
-    
-  Popcorn.plugin( "deckjs" , {
+
+  Popcorn.plugin( "slidedrive" , {
       manifest: {
         about: {
-          name: "Popcorn deckjs plugin",
+          name: "Slide Drive plugin",
           author: "David Seifried",
           website: "http://dseifried.wordpress.com/"
         },
-        options:{
+        options: {
           start: {
             elem: "input",
             type: "number",
@@ -18,19 +18,24 @@
             type: "number",
             label: "Out"
           },
-          slide: {
+          slideId: {
             elem: "input",
             type: "text",
-            label: "Slide"
+            label: "Slide (id)"
           },
-          target: "deckjs-container",
+          transcriptSource: {
+            elem: "textarea",
+            type: "text",
+            label: "Transcript (HTML)"
+          }
         }
       },
       _setup: function( options ) {
+        // Perhaps DOM-reflecting properties could be initialized here.
       }, 
       start: function( event, options ) {
-        $.deck( "go", +options.slide );
-        document.getElementById( "slideshow-transcript" ).innerHTML = $( ".transcript" )[ +options.slide ].innerHTML;
+        $.deck( "go", options.slideId );
+        document.getElementById( "slideshow-transcript" ).innerHTML = options.transcriptSource;
         document.getElementById( "slideshow-transcript" ).style.padding = "5px 5px 5px 5px";
       },
       end: function( event, options ) {

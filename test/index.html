@@ -1,0 +1,382 @@
+<!doctype html><html><head>
+  <meta charset="utf-8" />
+  <title>Slide Drive Tests</title>  
+</head><body>
+  <div id="workingArea"></div>
+  <ul id="results"></ul>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../external/jquery/jquery-1.7.min.js"><\/script>')</script>
+<script src="atesting.js"></script>
+<script>
+"use strict";
+
+var tests = atest( "Slide Drive Tests", 600, function ( toCleanUp ) {
+  function getFramedWindow ( path, toCleanUp ) {
+    var el = document.createElement( "iframe" );
+    el.src = path;
+    el.width = 1280
+    el.height = 768;
+    document.getElementById( "workingArea" ).appendChild( el );
+    toCleanUp(function () {
+      document.getElementById( "workingArea" ).removeChild( el );
+    })
+    return el.contentWindow;
+  }
+
+  function getAsBlob ( path, type ) {
+    // Syncronously produces a Blob of the file at the specified path.
+
+    var bb = new ( window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder ),
+        src = $.ajax( path, { async: false } ).responseText;
+    bb.append( src );
+    return bb.getBlob( type );
+  }
+
+  var testSvg = getAsBlob( "test-presentation.svg", "image/svg+xml" ),
+      testSvg_slideCount = 9;
+  
+  atest( "../index.html", 120, function ( toCleanUp ) {
+    atest( "Popcorn, jQuery and Deck.js initialized.", 5, function ( toCleanUp ) {
+      var frame = getFramedWindow( "../index.html", toCleanUp );
+
+      return function poll () {
+        return ( frame.Popcorn && frame.jQuery && frame.jQuery.deck ) ? true : poll;
+      }
+    } );
+
+    atest( "Popcorn instance exposed on window (for testing).", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../index.html", toCleanUp );
+
+      return function poll () {
+        return ( frame.popcorn ) ? true : poll;
+      }
+    } );
+
+    atest( "_slideDriveReady is set (for testing).", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../index.html", toCleanUp );
+
+      return function poll () {
+        return ( frame._slideDriveReady ) ? true : poll;
+      }
+    } );
+
+    atest( "Moving in Deck must move in Popcorn.", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../index.html", toCleanUp );
+
+      return function poll () {
+        return ( frame._slideDriveReady ) ? onReady : poll;
+      }
+  
+      function onReady () {
+        var previousTime = frame.popcorn.currentTime();
+        frame.jQuery.deck( "next" );
+        
+        atest( "Popcorn is advanced when Deck.js is advanced", frame.popcorn.currentTime() > previousTime  );
+    
+        return afterMove;
+      }
+  
+      function afterMove () {
+        var previousTime = frame.popcorn.currentTime();
+        frame.jQuery.deck( "prev" );
+        atest( "Going back in Deck.js must instantly go back in Popcorn.", frame.popcorn.currentTime() < previousTime );
+    
+        return true;
+      }
+    } );
+
+    atest( "Transcript must correspond to current slide", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../index.html", toCleanUp );
+
+      return function poll () {
+        return ( frame._slideDriveReady ) ? onReady : poll;
+      }
+
+      function onReady () {
+        frame.jQuery.deck( "go", 0 );
+        return afterGoingToSlide0;
+      }
+      
+      function afterGoingToSlide0 () {
+        atest( "After going to slide 0, transcript must contain 'a quick introduction'.",
+                /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
+
+        frame.jQuery.deck( "go", 1 );
+        return afterGoingToSlide1;
+      }
+      
+      function afterGoingToSlide1 () {
+        atest( "After going to slide 1, transcript must not contain 'a quick introduction'.",
+               ! /a quick introduction/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
+        atest( "After going to slide 1, transcript must contain 'to help scientists'.",
+               /to help scientists/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
+      }
+    } );
+
+    atest( "Anchor links must be respected", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../index.html#slide-1", toCleanUp );
+
+      return function poll () {
+        return ( frame._slideDriveReady ) ? onReady : poll;
+      }
+
+      function onReady () {
+        atest( "After loading presentation, transcript must contain 'to help scientists'.",
+               /to help scientists/.test( frame.document.querySelector( ".popcorn-transcript" ).textContent ) );
+      }
+    } );
+  } );
+
+  atest( "./template.html", 120, function ( toCleanUp ) {
+    atest( "Popcorn, Butter, jQuery and Deck.js initialized.", 5, function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function poll () {
+        return ( frame.Popcorn && frame.Butter && frame.jQuery && frame.jQuery.deck ) ? true : poll;
+      }
+    } );
+
+    atest( "Popcorn and Butter instances exposed on window (for testing).", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function poll () {
+        return ( frame.popcorn && frame.butter ) ? true : poll;
+      }
+    } );
+
+    atest( "_slideDriveReady is set (for testing).", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function poll () {
+        return ( frame._slideDriveReady ) ? true : poll;
+      }
+    } );
+
+    atest( "Playing advances > 2.75 seconds in 3 seconds.", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function pollReady () {
+        return ( frame._slideDriveReady ) ? onReady : pollReady;
+      }
+
+      function onReady () {
+        var start = new Date;
+        frame.popcorn.play();
+
+        return function pollAdvancement () {
+          var delta = (new Date - start);
+
+          return ( delta > 3000 )
+                 ? false
+                 : ( frame.popcorn.currentTime() >= 2.75 )
+                   ? true
+                   : pollAdvancement;
+        };
+      }
+    } );
+
+    atest( "Exported HTML doesn't include rendered MediaElement controls.", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function pollReady () {
+        return ( frame._slideDriveReady ) ? onReady : pollReady;
+      }
+
+      function onReady () {
+        var html = frame.butter.page.getHTML();
+
+        atest( "HTML must not contain MediaElement controls (\"mejs-\").", ! /mejs-/.test( html ) );
+      }
+    } );
+
+    atest( "Triggering filesdropped on track produces any new events.", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function pollReady () {
+        return ( ! frame._slideDriveReady ) ? pollReady : function () {
+          frame.butter.tracks[ 0 ].view.dispatch( "filesdropped", {
+            files: [ testSvg ],
+            track: frame.butter.tracks[ 0 ],
+            start: 5
+          } );
+      
+          return pollDone;
+        };
+      }
+  
+      function pollDone () {
+        return ( frame.butter.tracks[ 0 ].trackEvents.length > 1 ) ? true : pollDone;
+      }
+    } );
+
+    atest( "Triggering filesdropped on track produces enough events.", function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function pollReady () {
+        return ( ! frame._slideDriveReady ) ? pollReady : function () {
+          frame.butter.tracks[ 0 ].view.dispatch( "filesdropped", {
+            files: [ testSvg ],
+            track: frame.butter.tracks[ 0 ],
+            start: 5
+          } );
+      
+          return pollDone;
+        };
+      }
+  
+      function pollDone () {
+        return ( frame.butter.tracks[ 0 ].trackEvents.length >= 1 + testSvg_slideCount ) ? true : pollDone;
+      }
+    } );
+
+    atest( "Triggering filesdropped on track with multiple files produces enough events.",
+    function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function pollReady () {
+        return ( ! frame._slideDriveReady ) ? pollReady : function () {
+          frame.butter.tracks[ 0 ].view.dispatch( "filesdropped", {
+            files: [ testSvg, testSvg ],
+            track: frame.butter.tracks[ 0 ],
+            start: 5
+          } );
+      
+          return pollDone;
+        };
+      }
+  
+      function pollDone () {
+        return ( frame.butter.tracks[ 0 ].trackEvents.length >= 1 + testSvg_slideCount + testSvg_slideCount ) ? true : pollDone;
+      }
+    } );
+
+    atest( "Reordering events should reorder corresponding DOM elements",
+    function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function pollReady () {
+        return ( ! frame._slideDriveReady ) ? pollReady : function () {
+          frame.butter.tracks[ 0 ].view.dispatch( "filesdropped", {
+            files: [ testSvg, testSvg ],
+            track: frame.butter.tracks[ 0 ],
+            start: 5
+          } );
+      
+          return pollDropped;
+        };
+      }
+  
+      function pollDropped () {
+        return ( frame.butter.tracks[ 0 ].trackEvents.length >= 2 ) ? onReady : pollDropped;
+      }
+  
+      function onReady () {
+        var events = frame.butter.tracks[ 0 ].trackEvents,
+            firstElement = frame.document.getElementById( events[ 0 ].popcornOptions.slideId ),
+            secondElement = frame.document.getElementById( events[ 1 ].popcornOptions.slideId )
+    
+        atest( "Elements must be in correct order before reordering.",
+               firstElement.compareDocumentPosition(secondElement) === firstElement.DOCUMENT_POSITION_FOLLOWING);
+    
+        events[ 0 ].popcornOptions.start = 1;
+        events[ 1 ].popcornOptions.start = 0;
+    
+        atest( "Elements must be in correct order after reordering.",
+               firstElement.compareDocumentPosition(secondElement) === firstElement.DOCUMENT_POSITION_PRECEDING);
+    
+        return true;
+      }
+    } );
+
+    // case "SKIP":
+
+    atest( "Event time changes must be reflected in corresponding DOM elements",
+    function ( toCleanUp ) {
+      var frame = getFramedWindow( "../template.html", toCleanUp );
+
+      return function pollReady () {
+        return ( ! frame._slideDriveReady ) ? pollReady : onReady;
+      }
+  
+      function onReady () {
+        var events = frame.butter.tracks[ 0 ].trackEvents,
+            el = frame.document.getElementById( events[ 0 ].popcornOptions.slideId );
+    
+        for ( var i = 0; i < 5; i++ ) {
+          events[ 0 ].popcornOptions.start = i;
+          atest( "data-popcorn-slideshow must reflect value of .start, " + i,
+                  String( i ) === el.getAttribute( "data-popcorn-slideshow" ) );
+        }
+    
+        return true;
+      }
+    } );
+  });
+});
+
+document.getElementById( "results" ).appendChild( tests.report );
+
+</script>
+<style>
+  body {
+    font-family: sans-serif;
+    margin-bottom: 8em;
+  }
+  
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+  
+  ul ul {
+    font-size: 90%;
+  }
+  
+  li {
+    list-style-type: none;
+    padding: .125em;
+    background: #FFE;
+    padding: .25em .5em;
+    margin: .25em;
+    
+    border: 2px outset #BBB;
+    border-left: .25em solid #FF8;
+  }
+  
+  li.pass {
+    border-left: .25em solid green;
+    background: #EFE;
+  }
+
+  li.fail {
+    border-left: .25em solid red;
+    background: #FEE;
+  }
+  
+  li.running {
+    border-left: .25em solid orange;
+    background: #FFB;
+  }
+  
+  li.pending {
+    opacity: 0.5;
+  }
+  
+  .label {
+    font-weight: bold;
+  }
+
+  #workingArea {
+    height: 768px;
+    margin: 2em;
+    border: 1px dashed #D88;
+    background: white;
+    overflow: auto;
+  }
+  
+  #results {
+    margin: 1em 2em;
+  }
+</style>
+</body></html>

@@ -1,0 +1,214 @@
+<!--  This Source Code Form is subject to the terms of the MIT license
+      If a copy of the MIT license was not distributed with this file, you can
+      obtain one at http://www.mozillapopcorn.org/butter-license.txt -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      table#table tr  td:nth-child(2) * {
+        font-size: 0.9em;
+      }
+      body {
+        font-family: helvetica, sans-serif !important;
+        color: #fff !important;
+      }
+      p#message {
+        color: #FF0000;
+      }
+      h2 {
+        margin: 0;
+        font-size: 100%;
+      }
+      #transcriptSource {
+        width: 100%;
+        height: 5em;
+      }
+      #start, #end {
+        width: 4em;
+      }
+      #sd_options {
+        float: left;
+        width: 80%;
+      }
+      #sd_constants {
+        float: right;
+        width: 20%;
+        text-align: right;
+      }
+      #sd_constants input {
+        width: 6em;
+      }
+      #sd_thumbnail_container * {
+        background: white;
+        height: 92px;
+      }
+      #table {
+        clear: both;
+      }
+    </style>
+    <script type="text/javascript" src="/external/butter/editors/editor.js"></script>
+    <script type="text/javascript">
+      (function(){
+        var _comm = new Comm(),
+            _manifest = {};
+
+        document.addEventListener( "DOMContentLoaded", function( e ){
+
+          function sendData( alsoClose ){
+            alsoClose = !!alsoClose;
+            var popcornOptions = {};
+            for( var item in _manifest ) {
+              popcornOptions[ item ] = document.getElementById( item ).value;
+            }
+            document.getElementById( "message" ).innerHTML = "";
+            _comm.send( "submit", {
+              eventData: popcornOptions,
+              alsoClose: alsoClose
+            });
+          } //sendData
+
+          function okPressed( e ) {
+            sendData( true );
+          }
+
+          function cancelPressed( e ) {
+            _comm.send( "cancel" );
+          }
+
+          document.addEventListener( "keydown", function( e ) {
+            if( e.keyCode === 13 ) {
+              okPressed( e );
+            } else if( e.keyCode === 27 ) {
+              cancelPressed( e );
+            }
+          }, false);
+
+          _comm.listen( "close", function( e ){
+            // use this to process something right before the editor closes
+          });
+
+          _comm.listen( "trackeventupdated", function( e ){
+            for( var item in _manifest ){
+              var element = document.getElementById( item );
+              element.value = e.data[ item ];
+            } //for
+          });
+
+          _comm.listen( "trackeventupdatefailed", function( e ) {
+            if( e.data === "invalidtime" ){
+              document.getElementById( "message" ).innerHTML = "You've entered an invalid start or end time. Please verify that they are both greater than 0, the end time is equal to or less than the media's duration, and that the start time is less than the end time.";
+            } //if
+          });
+
+          _comm.listen( "trackeventdata", function( e ){
+            var popcornOptions = e.data.popcornOptions,
+                targets = e.data.targets,
+                media = e.data.media,
+                mediaName = "Current Media Element",
+                elemToFocus;
+
+            if( media && media.name && media.target ){
+              mediaName += " (\"" + media.name + "\": " + media.target + ")";
+            } //if
+
+            _manifest = e.data.manifest.options;
+
+            var slideSvg = window.parent.document.getElementById( popcornOptions.slideId );
+            if ( slideSvg.tagName !== "svg" ) {
+              slideSvg = slideSvg.querySelector( "svg" );
+            }
+            if ( slideSvg ) {
+              document.getElementById( "sd_thumbnail_container" ).appendChild( slideSvg.cloneNode( true ) );
+            }
+
+            for( var item in _manifest ) {
+              // We handle current slidedrive plugin options here, but we also include the
+              //  generic editor functionality below for any new options that are added.
+              switch (item) {
+                case "start":
+                case "end":
+                case "slideId":
+                case "target":
+                case "transcriptSource":
+                  if ( popcornOptions[ item ] != null ) {
+                    document.getElementById( item ).value = popcornOptions[ item ];
+                    document.getElementById( item ).addEventListener( "change", function( e ){
+                      sendData( false );
+                    }, false );
+                  }
+                  continue;
+                
+                  
+              }
+              
+              var row = document.createElement( "TR" ),
+                  col1 = document.createElement( "TD" ),
+                  col2 = document.createElement( "TD" ),
+                  elem = _manifest[ item ].elem,
+                  field;
+
+              var itemLabel = _manifest[ item ].label || item;
+              if( itemLabel === "In" ){
+                itemLabel = "Start (seconds)";
+              }
+              else if( itemLabel === "Out" ){
+                itemLabel = "End (seconds)";
+              } //if
+
+              col1.innerHTML = "<span>" + itemLabel + "</span>";
+
+              if( item === "target" ) {
+                // We don't use this at the moment.
+              } else {
+                field = document.createElement( elem );
+                field.id = item;
+                field.style.width = "100%";
+                field.placeholder = "Empty";
+
+                // Don't print "undefined" or the like
+                var val = popcornOptions[ item ];
+                if ( val || val === 0 ) {
+                  field.value = val;
+                }
+
+                col2.appendChild( field );
+                field.addEventListener( "change", function( e ){
+                  sendData( false );
+                }, false );
+              }
+
+              // Remember first control added in editor so we can focus
+              elemToFocus = elemToFocus || field;
+
+              row.appendChild( col1 );
+              row.appendChild( col2 );
+              document.getElementById( "table" ).appendChild( row );
+            }
+
+            // Focus the first element in the editor
+            if ( elemToFocus && elemToFocus.focus ) {
+              elemToFocus.focus();
+            }
+          });
+
+        }, false );
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="sd_options">
+      <h2>Transcript (HTML)</h2>
+      <textarea id="transcriptSource"></textarea>
+      <div>
+        Start, End (seconds): <input id="start" />, <input id="end" />
+      </div>
+    </div>
+    <div id="sd_constants">
+      <div id="sd_thumbnail_container"></div>
+      <div>slide id: <input disabled id="slideId" /></div>
+    </div>
+    <table id="table"></table>
+    <p id="message"></p>
+  </body>
+</html>

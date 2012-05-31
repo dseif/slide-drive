@@ -52,9 +52,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
       popcorn = Popcorn( "#audio", { frameAnimation: true });
       container = $( ".mejs-time-total" )[ 0 ];
-      slides = $( "[popcorn-slideshow]" ).each(function( key, val ) {
+      slides = $( "[data-popcorn-slideshow]" ).each(function( key, val ) {
 
-        var time = val.getAttribute( "popcorn-slideshow" );
+        var time = val.getAttribute( "data-popcorn-slideshow" );
 
         trackEvents.push( time );
         prevTime = time;
