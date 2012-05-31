@@ -47,7 +47,9 @@ Some basic functionality doesn't require [MongoDB][mongodb], but it is required 
 
 ### Open it!
 
-Load <http://localhost:8888/template.html> to view the Slide Drive template for Butter, or <http://localhost:8888/> to see an example Slide Drive presentation.
+- Example presentation: <http://localhost:8888/>
+- Slide Drive template for Butter: <http://localhost:8888/template.html>
+- Tests: <http://localhost:8888/test/>
 
  [slide-drive]: https://github.com/jeremybanks/slide-drive
  [deck.js]: http://imakewebthings.com/deck.js/
