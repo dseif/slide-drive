@@ -695,6 +695,8 @@ addEventListener( "DOMContentLoaded", function() {
     
     return document.getElementById("printable");
   }
+  
+  window.initTimelineTargets = function() { initTimelineTargets() }
 
   function initTimelineTargets () {
 
@@ -713,15 +715,15 @@ addEventListener( "DOMContentLoaded", function() {
         var teDiv = document.createElement( "span" ),
             spacer = document.createElement( "span" ),
             slides = document.querySelectorAll( ".slide" ),
-            lastSlideOptions = SlideButterOptions( slides[ times ] ),
-            endTime = ( times + 1 ) > slides.length - 1 ? lastSlideOptions.start: lastSlideOptions.start,
+            currentSlideOptions = SlideButterOptions( slides[ times ] ),
+            endTime = ( times + 1 ) > slides.length - 1 ? popcorn.duration(): SlideButterOptions( slides[ times + 1] ).start,
             recurse = false;
 
 
         if( innerContainer.children.length === 0 ) {
           innerContainer.appendChild( teDiv );
           innerContainer.appendChild( spacer );
-          teDiv.style.width = ( pixelsPerSecond * lastSlideOptions.start ) / ( container.offsetWidth / 100 ) + "%";
+          teDiv.style.width = ( pixelsPerSecond * currentSlideOptions.start ) / ( container.offsetWidth / 100 ) + "%";
           teDiv.id = "popcorn-slideshow-div-startPadding";
           recurse = true;
         } else {
@@ -729,9 +731,9 @@ addEventListener( "DOMContentLoaded", function() {
           innerContainer.appendChild( spacer );
           // such a gross block of code, must fix this
           if( userAgent[ userAgent.length - 1 ].split( "/" )[ 0 ] === "Firefox" ) {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - lastSlideOptions.start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - currentSlideOptions.start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
           } else {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - lastSlideOptions.start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
+            teDiv.style.width = ( pixelsPerSecond * ( endTime - currentSlideOptions.start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
           }
           teDiv.id = "popcorn-slideshow-div-" + count;
         }
