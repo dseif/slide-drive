@@ -266,7 +266,7 @@ addEventListener( "DOMContentLoaded", function() {
       $.deck( "go", anchorTargetId);
     }
     
-    window._slideDriveReady = true;
+    window._slideDriveReady = true; // required for tests
   }
   
   // Initialize keyboard shorcuts (disable Deck's if in Butter, else enable our own).
@@ -346,7 +346,7 @@ addEventListener( "DOMContentLoaded", function() {
       
       var toSlide = SlideButterOptions( slide );
       
-      popcorn.currentTime( toSlide.start + 0.0001 );
+      popcorn.currentTime( toSlide.start );
     });
     
   }
@@ -700,8 +700,6 @@ addEventListener( "DOMContentLoaded", function() {
     
     return document.getElementById("printable");
   }
-  
-  window.initTimelineTargets = function() { initTimelineTargets() }
 
   function initTimelineTargets () {
 
