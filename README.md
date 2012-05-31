@@ -39,9 +39,7 @@ Butter requires [Node.js][node.js] v0.6 or higher. You may use your system's cop
 
 ### Install and Run MongoDB
 
-Some basic functionality doesn't require [MongoDB][mongodb], but it is required to save or share pages. You're on your own for installing this.
-
-    $ screen -d -m mongod
+Some basic functionality doesn't require [MongoDB][mongodb], but it is required to save or share pages. You're on your own for this.
 
 ### Start the Butter/Cornfield server
 

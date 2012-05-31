@@ -27,17 +27,14 @@
             elem: "textarea",
             type: "text",
             label: "Transcript (HTML)"
-          },
-          target: "audio"
+          }
         }
       },
       _setup: function( options ) {
-        
+        // Perhaps DOM-reflecting properties could be initialized here.
       }, 
       start: function( event, options ) {
-        console.log("Going to slide " + options.slideId);
         $.deck( "go", options.slideId );
-
         document.getElementById( "slideshow-transcript" ).innerHTML = options.transcriptSource;
         document.getElementById( "slideshow-transcript" ).style.padding = "5px 5px 5px 5px";
       },

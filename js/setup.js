@@ -311,11 +311,9 @@ addEventListener( "DOMContentLoaded", function() {
     } );
     
     $(document).bind('deck.change', function(event, from, to) {
-      // TODO Detect if this move is in response to a Popcorn trigger or risk infinite loopage.
-      // How do I do that?
-      // Set a global in the plugin which is cleared by a handler that runs *after* this one.
-      // Err... or, since we can be sure that this will run, we can clear it here.
-      // Except we can't be sure because going to the current slide is a noop.
+      if ( from === to ) {
+        return;
+      }
       
       var container = document.querySelector( ".deck-container" ),
           slide = document.querySelectorAll( ".slide" )[ to ],
@@ -332,13 +330,9 @@ addEventListener( "DOMContentLoaded", function() {
         container.style.overflow = "hidden";
       }
       
-      var toSlide = SlideButterOptions( document.querySelectorAll( ".slide" )[ to ] ),
-          fromSlide = SlideButterOptions( document.querySelectorAll( ".slide" )[ from ] ),
-          currentTime = popcorn.currentTime();
+      var toSlide = SlideButterOptions( slide );
       
-      if( popcorn.currentTime() < toSlide.start || popcorn.currentTime() > fromSlide.end ) {
-        popcorn.currentTime( SlideButterOptions( document.querySelectorAll( ".slide" )[ to ] ) );
-      }
+      popcorn.currentTime( toSlide.start );
     });
     
   }
@@ -348,7 +342,6 @@ addEventListener( "DOMContentLoaded", function() {
     elem.style.height = (document.body.offsetHeight - elem.offsetTop - 3)   + "px";
     elem.style.maxWidth = (document.body.offsetWidth)+ "px";
   }
-  
   
   /* Verifies that the right type of files were dropped, otherwise displays an error.
      If they have been then unbind the drop handlers, read the file and continue to handleDroppedSVG.

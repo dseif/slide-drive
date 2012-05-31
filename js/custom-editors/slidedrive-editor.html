@@ -159,30 +159,7 @@
               col1.innerHTML = "<span>" + itemLabel + "</span>";
 
               if( item === "target" ) {
-                field = document.createElement( "SELECT" );
-                field.id = "target";
-
-                for( var i = 0, l = targets.length; i < l; i++ ) {
-                  var option = document.createElement( "OPTION" );
-                  option.value = targets[ i ];
-                  option.innerHTML = targets[ i ];
-                  field.appendChild( option );
-                  if( popcornOptions.target === targets[ i ] ) {
-                    field.value = targets[ i ];
-                  }
-                }
-                var option = document.createElement( "OPTION" );
-                option.value = "Media Element";
-                option.innerHTML =  mediaName;
-                field.appendChild( option );
-                if( popcornOptions.target === "Media Element" ) {
-                  field.value = "Media Element";
-                }
-                col2.appendChild( field );
-
-                field.addEventListener( "change", function( e ){
-                  sendData( false );
-                }, false );
+                // We don't use this at the moment.
               } else {
                 field = document.createElement( elem );
                 field.id = item;
@@ -230,7 +207,6 @@
     <div id="sd_constants">
       <div id="sd_thumbnail_container"></div>
       <div>slide id: <input disabled id="slideId" /></div>
-      <div>target: <input disabled id="target" /></div>
     </div>
     <table id="table"></table>
     <p id="message"></p>
