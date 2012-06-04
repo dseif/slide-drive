@@ -233,7 +233,7 @@ var tests = atest( "Slide Drive Tests", 600, function( toCleanUp ) {
       }
     } );
 
-    atest( "Playing advances > 2.75 seconds in 3 seconds.", function( toCleanUp ) {
+    atest( "Playing advances 7 seconds within 10 seconds.", function( toCleanUp ) {
       var frame = getFramedWindow( "../template.html", toCleanUp );
 
       return function pollReady() {
@@ -247,9 +247,9 @@ var tests = atest( "Slide Drive Tests", 600, function( toCleanUp ) {
         return function pollAdvancement() {
           var delta =(new Date - start);
 
-          return ( delta > 3000 )
+          return ( delta > 10000 )
                  ? false
-                 :( frame.popcorn.currentTime() >= 2.75 )
+                 :( frame.popcorn.currentTime() >= 7 )
                    ? true
                    : pollAdvancement;
         };
