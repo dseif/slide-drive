@@ -190,6 +190,22 @@ var tests = atest( "Slide Drive Tests", 600, function( toCleanUp ) {
           frame.jQuery(frame.document).trigger(e);
          }
     } );
+    
+    atest( "Slide indicators exist", function( toCleanUp ) {
+      var frame = getFramedWindow( "../index.html", toCleanUp );
+      
+      return function poll() {
+        return ( frame._slideDriveReady ) ? onReady : poll;
+      }
+
+      function onReady() {
+        atest("div-1 exists and has nonzero width",
+               parseFloat(frame.document.getElementById("popcorn-slideshow-div-1").style.width) > 0);
+        atest("div-14 exists and has nonzero width",
+               parseFloat(frame.document.getElementById("popcorn-slideshow-div-14").style.width) > 0);
+        
+      }
+    });
   } );
 
   atest( "./template.html", 120, function( toCleanUp ) {

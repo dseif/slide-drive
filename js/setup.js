@@ -743,6 +743,7 @@ addEventListener( "DOMContentLoaded", function() {
           }
           teDiv.id = "popcorn-slideshow-div-" + count;
         }
+        count++;
 
         teDiv.innerHTML = "<p><b></b></p>";
         teDiv.className = "popcorn-slideshow";
