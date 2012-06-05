@@ -266,6 +266,8 @@ addEventListener( "DOMContentLoaded", function() {
       previousOptions = currentOptions;
     }
     
+    previousOptions.end = popcorn.duration();
+    
     for ( var i = 0; i < slideEvents.length; ++i ) {
       addEvent( slideEvents[ i ] );
     }
