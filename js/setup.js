@@ -111,7 +111,7 @@ addEventListener( "DOMContentLoaded", function() {
             if ( transcriptEl.innerHTML != null ) {
               return transcriptEl.innerHTML;
             } else {
-              return transcriptEl.innerText;
+              return transcriptEl.textContent;
             }
           }
         },
@@ -124,7 +124,8 @@ addEventListener( "DOMContentLoaded", function() {
               transcriptEl.innerHTML = transcriptSource;
             } else {
               transcriptEl = document.createElement( "text" );
-              transcriptEl.innerText = transcriptSource;
+              transcriptEl.textContent = transcriptSource;
+              transcriptEl.setAttribute( "visibility", "hidden" );
             }
             transcriptEl.setAttribute( "class", "transcript" );
             _el.insertBefore( transcriptEl, _el.firstChild );
@@ -132,7 +133,7 @@ addEventListener( "DOMContentLoaded", function() {
             if ( transcriptEl.innerHTML != null ) {
               transcriptEl.innerHTML = transcriptSource;
             } else {
-              transcriptEl.innerText = transcriptSource;
+              transcriptEl.textContent = transcriptSource;
             }
           }
         }
