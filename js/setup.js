@@ -250,10 +250,24 @@ addEventListener( "DOMContentLoaded", function() {
       butterTrack = butter.media[ 0 ].addTrack( "Slides" );
     }
 
-    var slidesEls = document.querySelectorAll( ".slide" );
+    var slidesEls = document.querySelectorAll( ".slide" ),
+        slideEvents = [],
+        currentOptions, previousOptions = null;
 
     for ( var i = 0; i < slidesEls.length; ++i ) {
-      addEvent( SlideButterOptions( slidesEls[ i ] ) );
+      currentOptions = SlideButterOptions( slidesEls[ i ] );
+      
+      if ( previousOptions ) {
+        previousOptions.end = currentOptions.start;
+      }
+      
+      slideEvents.push( currentOptions );
+      
+      previousOptions = currentOptions;
+    }
+    
+    for ( var i = 0; i < slideEvents.length; ++i ) {
+      addEvent( slideEvents[ i ] );
     }
 
     // $.deck.enableScale();
