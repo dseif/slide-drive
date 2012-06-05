@@ -344,9 +344,13 @@ addEventListener( "DOMContentLoaded", function() {
         container.style.overflow = "hidden";
       }
 
-      var toSlide = SlideButterOptions( slide );
+      var toSlide = SlideButterOptions( slide ),
+          fromSlide = SlideButterOptions( slide ),
+          currentTime = popcorn.currentTime();
 
-      popcorn.currentTime( toSlide.start );
+      if (currentTime < toSlide.start || currentTime > toSlide.end) {
+        popcorn.currentTime( toSlide.start );
+      }
     });
 
   }
