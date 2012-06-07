@@ -219,15 +219,26 @@ addEventListener( "DOMContentLoaded", function() {
             containedAudio = renderedContainer.querySelector( "audio" );
         
         renderedContainer.parentNode.replaceChild( containedAudio, renderedContainer );
-        
+
         // We don't want Butter's copy of the popcorn events. They'll have been mirroed
         // back into the DOM, which we'll parse them back out of.
         // This will need a bit more nuance when other Popcorn events can be added.
         
         var pageScripts = root.querySelectorAll( "script" ),
             lastScript = pageScripts[ pageScripts.length - 1 ];
-        
-        // lastScript.parentNode.removeChild( lastScript );
+        lastScript.parentNode.removeChild( lastScript );
+
+        // Add Deck.js Hash extension. We don't want this active in Butter,
+        // so we don't add it until it's exported.
+
+        var deckHashStyle = document.createElement( "link" );
+        deckHashStyle.rel = "stylesheet";
+        deckHashStyle.href = "external/deckjs/extensions/hash/deck.hash.css";
+        root.querySelector( "head" ).appendChild( deckHashStyle );
+
+        var deckHashScript = document.createElement( "script" );
+        deckHashScript.src = "external/deckjs/extensions/hash/deck.hash.js";
+        root.querySelector( "body" ).appendChild( deckHashScript );
       });
       
       // Bind file drop handling to each Butter track.
