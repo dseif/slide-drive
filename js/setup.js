@@ -245,27 +245,27 @@ addEventListener( "DOMContentLoaded", function() {
     var butterTrack,
         addEvent = inButter ? function ( options ) { butterTrack.addTrackEvent({ type: "slidedrive", popcornOptions: options }); }
                             : function ( options ) { popcorn.slidedrive( options ); }
-    
+
     if ( inButter ) {
       butterTrack = butter.media[ 0 ].addTrack( "Slides" );
     }
-    
+
     var slidesEls = document.querySelectorAll( ".slide" );
-    
+
     for ( var i = 0; i < slidesEls.length; ++i ) {
       addEvent( SlideButterOptions( slidesEls[ i ] ) );
     }
-    
+
     // $.deck.enableScale();
-    
+
     initEvents();
     initTimelineTargets();
     resizeTranscript();
-    
+
     if ( anchorTargetId != null ) {
       $.deck( "go", anchorTargetId);
     }
-    
+
     window._slideDriveReady = true; // required for tests
   }
   
@@ -449,19 +449,7 @@ addEventListener( "DOMContentLoaded", function() {
     
     return fontNames.join( "," );
   }
-  
-  function stripWhitespaceNodes ( el ) {
-    if ( el.nodeType === 3 ) {
-      if ( /^\s*$/.test( el.textContent) ) {
-        el.parentNode.removeChild( el )
-      }
-    } else {
-      for ( var i = 0; i < el.childNodes.length; ++i ) {
-        stripWhitespaceNodes( el.childNodes[ i ] );
-      }
-    }
-  }
-  
+
   function makeFontEmbedder ( root ) {
     var fontEls = $.map( root.querySelectorAll( "font-face" ), function( el ) {
       el.cloneNode( true );
@@ -514,12 +502,70 @@ addEventListener( "DOMContentLoaded", function() {
   */
   function handleDroppedSVG ( root, track, start ) {
     console.log( "Read SVG from file." );
-    
-    // Remove whitespace text nodes between <text> nodes.
-    
-    var textGroups = $.unique( $( "text", root ).map(function() { return $(this).closest("g")[0]; }).get() );
-    textGroups.map(stripWhitespaceNodes);
-    
+
+    // See #42
+    var i, j, k,
+        l, m, n;
+
+    var textEls = [].slice.call( root.querySelectorAll( "text" ) );
+
+    for ( i = 0, l = textEls.length; i < l; ++i ) {
+      var firstEl = textEls[ i ],
+          consecutiveEls = [ firstEl ],
+          latestEl = firstEl;
+
+      while ( i + 1 < l && latestEl.nextElementSibling === textEls[ i + 1 ] ) {
+        latestEl = textEls[ i + 1 ];
+        consecutiveEls.push( latestEl );
+
+        ++i;
+      }
+
+      if ( consecutiveEls.length > 1 ) {
+        var newContainer = document.createElement( "text" );
+
+        newContainer.setAttribute( "x", firstEl.getAttribute( "x" ) );
+        newContainer.setAttribute( "y", firstEl.getAttribute( "y" ) );
+
+        for ( j = 0, m = consecutiveEls.length; j < m; ++j ) {
+          var oldEl = consecutiveEls[ j ],
+              oldElAttributes = oldEl.attributes,
+              oldElChildren = [].slice.call( oldEl.childNodes ),
+              newEl = document.createElement( "tspan" );
+
+          newContainer.appendChild( newEl );
+
+          oldEl !== firstEl && oldEl.parentNode.removeChild( oldEl );
+
+          for ( k = 0, n = oldElAttributes.length; k < n; ++k ) {
+            var oldElAttr = oldElAttributes.item( k );
+            newEl.setAttribute( oldElAttr.nodeName, oldElAttr.nodeValue );
+          }
+
+          for ( k = 0, n = oldElChildren.length; k < n; ++k ) {
+            newEl.appendChild( oldElChildren[ k ] );
+          }
+        }
+
+        firstEl.parentNode.replaceChild( newContainer, firstEl );
+      }
+    }
+
+    textEls = null;
+
+    // Convert SVG to source via a temporary div, then re-parse.
+    var tmpContainer = document.createElement( "div" ),
+        tmpSource;
+    root.parentNode.replaceChild( tmpContainer, root );
+    tmpContainer.appendChild( root );
+
+    tmpSource = tmpContainer.innerHTML;
+    tmpContainer.innerHTML = "";
+    tmpContainer.innerHTML = tmpSource;
+
+    root = tmpContainer.querySelector( "svg" );
+    tmpContainer.parentNode.replaceChild( root, tmpContainer );
+
     // Embedded fonts? Detach before cloning, then re-add to the first slide.
     
     var i, l, f, d;
