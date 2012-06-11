@@ -702,72 +702,25 @@ addEventListener( "DOMContentLoaded", function() {
   }
 
   function initTimelineTargets () {
-
-      var container,
-          innerContainer = document.createElement( "span" ),
-          userAgent = navigator.userAgent.split( " " ),
-          trackEvents = [],
-          prevTime = 0,
-          count = 0,
-          pixelsPerSecond,
-          containerWidth,
-          flag = false,
-          eventDiv = document.getElementById( "events" );
+    var container = document.querySelector( ".mejs-time-total" ),
+        slides = $.deck( "getSlides" ).map( function( $el ) { return $el[ 0 ]; } ),
+        totalTime = popcorn.duration(),
+        i, l, slide, slideOptions, markEl, startTime;
+    
+    container.style.position = "relative";
+    for ( i = 1, l = slides.length; i < l; ++i ) {
+      slide = slides[ i ];
+      startTime = SlideButterOptions( slide ).start;
       
-      function createElement( times ) {
-        var teDiv = document.createElement( "span" ),
-            spacer = document.createElement( "span" ),
-            slides = document.querySelectorAll( ".slide" ),
-            currentSlideOptions = SlideButterOptions( slides[ times ] ),
-            endTime = ( times + 1 ) > slides.length - 1 ? popcorn.duration(): SlideButterOptions( slides[ times + 1] ).start,
-            recurse = false;
-
-
-        if( innerContainer.children.length === 0 ) {
-          innerContainer.appendChild( teDiv );
-          innerContainer.appendChild( spacer );
-          teDiv.style.width = ( pixelsPerSecond * currentSlideOptions.start ) / ( container.offsetWidth / 100 ) + "%";
-          teDiv.id = "popcorn-slideshow-div-startPadding";
-          recurse = true;
-        } else {
-          innerContainer.appendChild( teDiv );
-          innerContainer.appendChild( spacer );
-          // such a gross block of code, must fix this
-          if( userAgent[ userAgent.length - 1 ].split( "/" )[ 0 ] === "Firefox" ) {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - currentSlideOptions.start ) ) / ( ( container.offsetWidth ) / 100 ) + "%";
-          } else {
-            teDiv.style.width = ( pixelsPerSecond * ( endTime - currentSlideOptions.start ) ) / ( ( container.offsetWidth - ( count ) ) / 100 ) + "%";
-          }
-          teDiv.id = "popcorn-slideshow-div-" + count;
-        }
-
-        teDiv.innerHTML = "<p><b></b></p>";
-        teDiv.className = "popcorn-slideshow";
-
-        spacer.className = "spacer";
-
-       recurse && createElement( times );
-      }
+      markEl = document.createElement( "div" );
+      markEl.style.position = "absolute";
+      markEl.style.top = 0;
+      markEl.style.height = "10px";
+      markEl.style.width = "1px";
+      markEl.style.background = "black";
+      markEl.style.left = (startTime / totalTime) * 100 + "%";
       
-      container = document.querySelector( ".mejs-time-total" );
-      containerWidth = container.offsetWidth;
-      pixelsPerSecond = containerWidth / popcorn.duration();
-
-      for( var i = 0, l = document.querySelectorAll( ".slide" ).length; i < l; i++ ) {
-        createElement(i)
-      }
-
-      container.insertBefore( innerContainer, container.children[ 1 ] );
-      container.removeChild( container.children[ 0 ] );
-      innerContainer.className += " innerContainer";
-
-      var div = document.createElement( "span" );
-      innerContainer.appendChild( div );
-
-      div.style.width = ( ( container.getBoundingClientRect().right - innerContainer.children[ innerContainer.children.length - 2 ].getBoundingClientRect().right ) / container.offsetWidth ) * 100 + "%";
-      div.id = "popcorn-slideshow-div-endPadding";
-      div.innerHTML = "<p><b></b></p>";
-      div.className = "popcorn-slideshow";
-
+      container.appendChild( markEl );
+    }
   }
 }, false );
