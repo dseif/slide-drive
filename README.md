@@ -69,5 +69,5 @@ Keyboard commands
 Contributors
 ------------
 
-David Seifried
-[Jeremy Banks](http://github.com/jeremybanks)
+* David Seifried
+* [Jeremy Banks](http://github.com/jeremybanks)
