@@ -289,6 +289,19 @@ addEventListener( "DOMContentLoaded", function() {
       for ( var i = 0; i < toRemove.length; i++ ) {
         $( document ).off( toRemove[ i ] );
       }
+
+      butter.media[ 0 ].listen( "trackeventremoved", function( e ) {
+        if ( e.data.type === "slidedrive" ) {
+          var slideId = e.data.popcornOptions.slideId;
+          var el = document.getElementById( slideId );
+
+          if ( el ) {
+            el.parentNode.removeChild( el );
+          }
+
+          initDeck();
+        }
+      });
     } else {
       console.log( "Activating our keyboard shortcuts." );
 
