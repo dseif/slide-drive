@@ -208,6 +208,27 @@ addEventListener( "DOMContentLoaded", function() {
 
   // Initialization to take place after media (and Butter)? is ready.
   function initAfterMediaReady () {
+    // HTTP/1.0 servers can cause audio elements to break silently. We want them to break loudly.
+    var duration = popcorn.duration(),
+        originalTime = popcorn.currentTime(),
+        targetTime = 0;
+
+    // .duration breaks in Firefox:
+    if ( isNaN( duration ) ) {
+      throw new Error( "popcorn.duration() is NaN.")
+    }
+
+    if ( originalTime === targetTime ) {
+      targetTime += popcorn.duration() / 2;
+    }
+
+    popcorn.currentTime( targetTime );
+
+    // .currentTime breaks in Chrome:
+    if ( popcorn.currentTime() === originalTime ) {
+      throw new Error( "Calling popcorn.currentTime(x) did not affect the value of popcorn.currentTime()." );
+    }
+
     console.log( "Media ready, continuing initialization." );
 
     if ( inButter ) {
