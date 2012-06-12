@@ -208,8 +208,22 @@ addEventListener( "DOMContentLoaded", function() {
   
   // Initialization to take place after media (and Butter)? is ready.
   function initAfterMediaReady () {
+    var duration = popcorn.duration(),
+        originalTime = popcorn.currentTime(),
+        targetTime = 0;
+
+    if ( originalTime === targetTime ) {
+      targetTime += popcorn.duration() / 2;
+    }
+
+    popcorn.currentTime( targetTime );
+
+    if ( popcorn.currentTime() === originalTime ) {
+      throw new Error( "Calling popcorn.currentTime(x) did not affect the value of popcorn.currentTime()." );
+    }
+
     console.log( "Media ready, continuing initialization." );
-    
+
     if ( inButter ) {
       butter.page.listen( "getHTML", function ( e ) {
         var root = e.data;
