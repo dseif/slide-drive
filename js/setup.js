@@ -637,7 +637,7 @@ addEventListener( "DOMContentLoaded", function() {
 
   function initPrintable () {
     var body = document.getElementById( "printable" ),
-        bodyChildren = document.body.children[ 0 ].getElementsByTagName( "section" );
+        bodyChildren = document.getElementById( "main" ).getElementsByTagName( "section" );
 
     for( var i = 0, l = bodyChildren.length; i < l; i++ ) {
       var slideContainer = document.createElement("slideContainer"),
