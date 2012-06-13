@@ -7,7 +7,8 @@ addEventListener( "DOMContentLoaded", function() {
       butter           = null,
       fromButter       = !inButter && document.querySelector( "body" ).hasAttribute( "data-butter-crufted" ),
       popcorn          = null,
-      anchorTargetId   = null;
+      anchorTargetId   = null,
+      deckInitialized  = false;
 
   init();
 
@@ -82,7 +83,7 @@ addEventListener( "DOMContentLoaded", function() {
               parent.insertBefore( _el, successor );
             }
 
-            $.deck( ".slide" );
+            initDeck();
           }
         }
       },
@@ -239,7 +240,7 @@ addEventListener( "DOMContentLoaded", function() {
       });
     }
 
-    $.deck( ".slide" );
+    initDeck();
 
     // Parse slide data into live Popcorn events or Butter timeline events.
     var butterTrack,
@@ -267,6 +268,31 @@ addEventListener( "DOMContentLoaded", function() {
     }
 
     window._slideDriveReady = true; // required for tests
+  }
+
+  function initDeck() {
+    if ( deckInitialized ) {
+      // Re-initializing the Deck will add any new slides, but it causes the
+      // presentation to be reset to the first slide, so we preserve its state.
+
+      var currentTime = popcorn.currentTime(),
+          currentSlide = SlideButterOptions( $.deck( "getSlide" )[0] );
+
+      $.deck( ".slide" );
+
+      if ( currentTime >= currentSlide.start && currentTime <= currentSlide.end ) {
+        $.deck( "go", currentSlide.slideId );
+      } else {
+        // A new slide might have been placed at the current time, we need to make
+        // sure we jump back to into it to be sure it's activated.
+        popcorn.currentTime( 0 );
+      }
+
+      popcorn.currentTime( currentTime );
+    } else {
+      deckInitialized = true;
+      $.deck( ".slide" );
+    }
   }
 
   // Initialize keyboard shorcuts (disable Deck's if in Butter, else enable our own).
@@ -329,7 +355,9 @@ addEventListener( "DOMContentLoaded", function() {
       }
 
       var container = document.querySelector( ".deck-container" ),
+          currentTime = popcorn.currentTime(),
           slide = document.querySelectorAll( ".slide" )[ to ],
+          slideOptions = SlideButterOptions( slide ),
           outerSlide = slide,
           parentSlides = $( slide ).parents( ".slide" );
 
@@ -344,9 +372,9 @@ addEventListener( "DOMContentLoaded", function() {
         container.style.overflow = "hidden";
       }
 
-      var toSlide = SlideButterOptions( slide );
-
-      popcorn.currentTime( toSlide.start );
+      if ( currentTime < slideOptions.start || currentTime > slideOptions.end ) {
+        popcorn.currentTime( slideOptions.start );
+      }
     });
 
   }
@@ -572,6 +600,7 @@ addEventListener( "DOMContentLoaded", function() {
     var addSlideInterval = setInterval(function() {
       if ( i >= svgSlideIds.length ) {
         clearInterval( addSlideInterval );
+
         return;
       }
 
@@ -626,9 +655,7 @@ addEventListener( "DOMContentLoaded", function() {
 
       cumulativeDuration += 5;
 
-      var currentSlide = $.deck( "getSlide" )[0];
-      $.deck( ".slide" );
-      $.deck( "go", currentSlide );
+      initDeck();
 
       i++;
     }, 200);
