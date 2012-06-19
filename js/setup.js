@@ -712,12 +712,8 @@ addEventListener( "DOMContentLoaded", function() {
       slide = slides[ i ];
       startTime = SlideButterOptions( slide ).start;
       
-      markEl = document.createElement( "div" );
-      markEl.style.position = "absolute";
-      markEl.style.top = 0;
-      markEl.style.height = "10px";
-      markEl.style.width = "1px";
-      markEl.style.background = "black";
+      markEl = document.createElement( "span" );
+      markEl.className = "slide-indicator";
       markEl.style.left = (startTime / totalTime) * 100 + "%";
       
       container.appendChild( markEl );

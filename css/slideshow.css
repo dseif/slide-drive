@@ -8,6 +8,14 @@
   float: left !important;
 }
 
+.mejs-controls .mejs-time-rail .mejs-time-total span.slide-indicator {
+  position: absolute;
+  top: 0;
+  height: 10px;
+  width: 1px;
+  background: black;
+}
+
 .spacer {
   width: 1px !important;
   position: relative;
